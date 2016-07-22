@@ -16,7 +16,12 @@ class SqliteHelper(SqlHelper):
         self.cursor = self.database.cursor()
         #创建表结构
         self.createTable()
-
+    def compress(self):
+        '''
+        数据库进行压缩
+        :return:
+        '''
+        self.database.execute('VACUUM')
 
     def createTable(self):
         self.cursor.execute("create TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY ,ip VARCHAR(16) NOT NULL,"

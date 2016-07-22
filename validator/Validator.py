@@ -29,11 +29,12 @@ class Validator(object):
         try:
             #首先将超时的全部删除
             self.deleteOld()
-            #接着将重复的删除掉
-
             #接着检测剩余的ip,是否可用
             results = self.sqlHelper.selectAll()
             self.detect_pool.map(self.detect_db,results)
+            #将数据库进行压缩
+            self.sqlHelper.compress()
+
             return self.sqlHelper.selectCount()#返回最终的数量
         except Exception,e:
             print e
