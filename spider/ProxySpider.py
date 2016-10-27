@@ -40,12 +40,12 @@ class ProxySpider(object):
                     proxys_tmp.extend(proxy)
 
                 proxys = proxys_tmp
-                print 'first_proxys--%s',len(proxys)
+                print 'first_proxys--%s'%len(proxys)
                 #这个时候proxys的格式是[{},{},{},{},{},{}]
                 proxys_tmp=None
                 #这个时候开始去重:
                 proxys = [dict(t) for t in set([tuple(proxy.items()) for proxy in proxys])]
-                print 'end_proxys--%s',len(proxys)
+                print 'end_proxys--%s'%len(proxys)
                 print 'spider proxys -------%s'%type(proxys)
                 proxys = validator.run_list(proxys)#这个是检测后的ip地址
 

@@ -1,5 +1,6 @@
 #coding:utf-8
 import datetime
+from lxml import etree
 from gevent.pool import Pool
 import requests
 import time
@@ -19,6 +20,7 @@ class Validator(object):
     def __init__(self,sqlHelper):
         self.detect_pool = Pool(config.THREADNUM)
         self.sqlHelper =sqlHelper
+        self.selfip = self.getMyIP()
 
 
     def run_db(self):
@@ -80,21 +82,24 @@ class Validator(object):
         ip = result[0]
         port = str(result[1])
         proxies={"http": "http://%s:%s"%(ip,port)}
+
         start = time.time()
         try:
             r = requests.get(url=TEST_URL,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
 
-            if not r.ok:
+
+            if not r.ok or r.text.find(ip)==-1:
                 condition = "ip='"+ip+"' AND "+'port='+port
-                print 'fail ip =%s'%ip
+                print 'fail ip =%s,port=%s'%(ip,port)
                 self.sqlHelper.delete(SqliteHelper.tableName,condition)
             else:
+                print r.text
                 speed = round(time.time()-start, 2)
                 self.sqlHelper.update(SqliteHelper.tableName,'SET speed=? WHERE ip=? AND port=?',(speed,ip,port))
-                print 'success ip =%s,speed=%s'%(ip,speed)
+                print 'success ip =%s,port=%s,speed=%s'%(ip,port,speed)
         except Exception,e:
                 condition = "ip='"+ip+"' AND "+'port='+port
-                print 'fail ip =%s'%ip
+                print 'fail ip =%s,port=%s'%(ip,port)
                 self.sqlHelper.delete(SqliteHelper.tableName,condition)
 
 
@@ -109,28 +114,90 @@ class Validator(object):
         ip = proxy['ip']
         port = proxy['port']
         proxies={"http": "http://%s:%s"%(ip,port)}
+        proxyType = self.checkProxyType(proxies)
+        if proxyType==3:
+            print 'fail ip =%s,port=%s'%(ip,port)
+
+            proxy = None
+            return proxy
+        else:
+            proxy['type']=proxyType
         start = time.time()
         try:
             r = requests.get(url=TEST_URL,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
 
-            if not r.ok:
-                print 'fail ip =%s'%ip
+            if not r.ok or r.text.find(ip)==-1:
+                print 'fail ip =%s,port=%s'%(ip,port)
                 proxy = None
-
             else:
                 speed = round(time.time()-start,2)
-                print 'success ip =%s,speed=%s'%(ip,speed)
+                print 'success ip =%s,port=%s,speed=%s'%(ip,port,speed)
                 proxy['speed']=speed
                 # return proxy
         except Exception,e:
-                print 'fail ip =%s'%ip
+                print 'fail ip =%s,port=%s'%(ip,port)
                 proxy = None
         return proxy
         # return proxys
 
+    def checkProxyType(self,proxies):
+        '''
+        用来检测代理的类型，突然发现，免费网站写的信息不靠谱，还是要自己检测代理的类型
+        :param proxies: 代理(0 高匿，1 匿名，2 透明 3 无效代理
+        :return:
+        '''
+
+        try:
+
+            r = requests.get(url=config.TEST_PROXY,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
+            if r.ok:
+                root = etree.HTML(r.text)
+                ip = root.xpath('.//center[2]/table/tr[3]/td[2]')[0].text
+                http_x_forwared_for = root.xpath('.//center[2]/table/tr[8]/td[2]')[0].text
+                http_via = root.xpath('.//center[2]/table/tr[9]/td[2]')[0].text
+                # print ip,http_x_forwared_for,http_via,type(http_via),type(http_x_forwared_for)
+                if ip==self.selfip:
+                    return 3
+                if http_x_forwared_for is None and http_via is None:
+                    return 0
+                if http_via != None and http_x_forwared_for.find(self.selfip)== -1:
+                    return 1
+
+                if http_via != None and http_x_forwared_for.find(self.selfip)!= -1:
+                    return 2
+
+
+            return 3
+
+
+
+        except Exception,e:
+            # print e
+            return 3
+
+
+
+    def getMyIP(self):
+        try:
+            r = requests.get(url=config.TEST_PROXY,headers=config.HEADER,timeout=config.TIMEOUT)
+            # print r.text
+            root = etree.HTML(r.text)
+            ip = root.xpath('.//center[2]/table/tr[3]/td[2]')[0].text
+
+            print 'ip',ip
+            return ip
+        except Exception,e:
+            print e
+            return None
+
+
+
+
 
 if __name__=='__main__':
-    # v = Validator()
+    v = Validator(None)
+    v.getMyIP()
+    v.selfip
     # results=[{'ip':'192.168.1.1','port':80}]*10
     # results = v.run(results)
     # print results

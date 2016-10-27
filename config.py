@@ -45,7 +45,7 @@ parserList = [
         {
             'urls': ['http://www.ip181.com/daili/%s.html'% n for n in range(1, 11)],
             'type':'xpath',
-            'pattern': "html/body/div[2]/div/div[2]/div/div[3]/table/tbody/tr[position()>1]",
+            'pattern': ".//div[@class='row']/div[3]/table/tbody/tr[position()>1]",
             'postion':{'ip':'./td[1]','port':'./td[2]','type':'./td[3]','protocol':'./td[4]'}
 
         },
@@ -54,8 +54,14 @@ parserList = [
             'type':'xpath',
             'pattern': ".//*[@id='ip_list']/tr[position()>1]",
             'postion':{'ip':'./td[2]','port':'./td[3]','type':'./td[5]','protocol':'./td[6]'}
+        },
+        {
+            'urls':['http://www.cnproxy.com/proxy%s.html'% i for i in range(1,11)],
+            'type':'module',
+            'moduleName':'CnproxyPraser',
+            'pattern':r'<tr><td>(\d+\.\d+\.\d+\.\d+)<SCRIPT type=text/javascript>document.write\(\"\:\"(.+)\)</SCRIPT></td><td>(HTTP|SOCKS4)\s*',
+            'postion':{'ip':0,'port':1,'type':-1,'protocol':2}
         }
-
         ]
 '''
 数据库的配置
@@ -82,8 +88,8 @@ API_PORT=8000
 爬虫爬取和检测ip的设置条件
 不需要检测ip是否已经存在，因为会定时清理
 '''
-UPDATE_TIME=30*60#每半个小时检测一次是否有代理ip失效
-MINNUM = 200 #当有效的ip值小于一个时 需要启动爬虫进行爬取
+UPDATE_TIME=20*60#每半个小时检测一次是否有代理ip失效
+MINNUM = 50 #当有效的ip值小于一个时 需要启动爬虫进行爬取
 MAXTIME = 24*60 #当爬取存储开始一直使用的最大时间，如果超过这个时间，都删除
 
 TIMEOUT = 5#socket延时
@@ -147,4 +153,7 @@ HEADER = {
     'Accept-Encoding': 'gzip, deflate',
 }
 
-TEST_URL='http://www.ip138.com/'
+TEST_URL='http://ip.chinaz.com/getip.aspx'
+# #添加的检测关键字，修复测试的代理是否能真正的访问到目的网址
+# TEST_KEY = '站长工具'
+TEST_PROXY='http://www.stilllistener.com/checkpoint1/test11/'
