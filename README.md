@@ -21,6 +21,9 @@ apt-get install python-lxml
 <br/>
 希望大家提供更多的代理网站，现在爬取的好用的代理ip还是太少。
 
+<br/>
+同时感谢[super1-chen](https://github.com/super1-chen)对项目的贡献。
+<br/>
 ## 如何使用
 
 将项目目录clone到当前文件夹
