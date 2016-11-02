@@ -1,5 +1,6 @@
 #coding:utf-8
 import datetime
+
 from lxml import etree
 from gevent.pool import Pool
 import requests
@@ -7,21 +8,23 @@ import time
 from config import TEST_URL
 import config
 from db.SQLiteHelper import SqliteHelper
+import logging
+logger = logging.getLogger("validator")
+
 from gevent import monkey
 monkey.patch_all()
+
+
 __author__ = 'Xaxdus'
 
 class Validator(object):
 
-    def __init__(self):
-        self.detect_pool = Pool(config.THREADNUM)
-
-
     def __init__(self,sqlHelper):
+
         self.detect_pool = Pool(config.THREADNUM)
         self.sqlHelper =sqlHelper
         self.selfip = self.getMyIP()
-
+        self.detect_pool = Pool(config.THREADNUM)
 
     def run_db(self):
         '''
@@ -39,7 +42,7 @@ class Validator(object):
 
             return self.sqlHelper.selectCount()#返回最终的数量
         except Exception,e:
-            print e
+            logger.warning(str(e))
             return 0
 
 
@@ -56,11 +59,6 @@ class Validator(object):
         #这个时候proxys的格式是[{},{},{},{},{}]
         return proxys
 
-
-
-
-
-
     def deleteOld(self):
         '''
         删除旧的数据
@@ -68,9 +66,6 @@ class Validator(object):
         '''
         condition = "updatetime<'%s'"%((datetime.datetime.now() - datetime.timedelta(minutes=config.MAXTIME)).strftime('%Y-%m-%d %H:%M:%S'))
         self.sqlHelper.delete(SqliteHelper.tableName,condition)
-
-
-
 
 
     def detect_db(self,result):
@@ -87,19 +82,18 @@ class Validator(object):
         try:
             r = requests.get(url=TEST_URL,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
 
-
             if not r.ok or r.text.find(ip)==-1:
                 condition = "ip='"+ip+"' AND "+'port='+port
-                print 'fail ip =%s,port=%s'%(ip,port)
+                logger.info('failed %s:%s'%(ip,port))
                 self.sqlHelper.delete(SqliteHelper.tableName,condition)
             else:
-                print r.text
+                logger.info(r.text)
                 speed = round(time.time()-start, 2)
                 self.sqlHelper.update(SqliteHelper.tableName,'SET speed=? WHERE ip=? AND port=?',(speed,ip,port))
-                print 'success ip =%s,port=%s,speed=%s'%(ip,port,speed)
+                logger.info('success %s:%s, speed=%s'%(ip,port,speed))
         except Exception,e:
                 condition = "ip='"+ip+"' AND "+'port='+port
-                print 'fail ip =%s,port=%s'%(ip,port)
+                logger.info('failed %s:%s'%(ip,port))
                 self.sqlHelper.delete(SqliteHelper.tableName,condition)
 
 
@@ -116,7 +110,7 @@ class Validator(object):
         proxies={"http": "http://%s:%s"%(ip,port)}
         proxyType = self.checkProxyType(proxies)
         if proxyType==3:
-            print 'fail ip =%s,port=%s'%(ip,port)
+            logger.info('failed %s:%s'%(ip,port))
 
             proxy = None
             return proxy
@@ -127,15 +121,15 @@ class Validator(object):
             r = requests.get(url=TEST_URL,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
 
             if not r.ok or r.text.find(ip)==-1:
-                print 'fail ip =%s,port=%s'%(ip,port)
+                logger.info('failed %s:%s'%(ip,port))
                 proxy = None
             else:
                 speed = round(time.time()-start,2)
-                print 'success ip =%s,port=%s,speed=%s'%(ip,port,speed)
+                logger.info('success %s:%s, speed=%s'%(ip,port,speed))
                 proxy['speed']=speed
                 # return proxy
         except Exception,e:
-                print 'fail ip =%s,port=%s'%(ip,port)
+                logger.info('failed %s:%s'%(ip,port))
                 proxy = None
         return proxy
         # return proxys
@@ -165,14 +159,12 @@ class Validator(object):
 
                 if http_via != None and http_x_forwared_for.find(self.selfip)!= -1:
                     return 2
-
-
             return 3
 
 
 
         except Exception,e:
-            # print e
+            logger.warning(str(e))
             return 3
 
 
@@ -184,15 +176,11 @@ class Validator(object):
             root = etree.HTML(r.text)
             ip = root.xpath('.//center[2]/table/tr[3]/td[2]')[0].text
 
-            print 'ip',ip
+            logger.info('ip %s' %ip)
             return ip
         except Exception,e:
-            print e
+            logger.info(str(e))
             return None
-
-
-
-
 
 if __name__=='__main__':
     v = Validator(None)

@@ -11,6 +11,8 @@ __author__ = 'Xaxdus'
 import BaseHTTPServer
 import json
 import urlparse
+import logging
+logger = logging.getLogger('api')
 
 # keylist=['count', 'types','protocol','country','area']
 class WebRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -23,7 +25,7 @@ class WebRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         parsed_path = urlparse.urlparse(self.path)
         try:
             query = urllib.unquote(parsed_path.query)
-            print query
+            logger.info("query %s" %query)
             if query.find('&')!=-1:
                 params = query.split('&')
                 for param in params:
@@ -48,13 +50,13 @@ class WebRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             # print type(result)
             # for r in  result:
             #     print r
-            print result
-            data = json.dumps(result)
+            data = [{'ip':item[0], 'port': item[1]} for item in result]
+            data = json.dumps(data)
             self.send_response(200)
             self.end_headers()
             self.wfile.write(data)
         except Exception,e:
-            print e
+            logger.warning(str(e))
             self.send_response(404)
 
 if __name__=='__main__':

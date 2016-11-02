@@ -6,6 +6,8 @@
 import socket
 import struct
 
+import logging
+logger = logging.getLogger('util')
 
 class IPAddresss:
     def __init__(self, ipdbFile):
@@ -70,7 +72,7 @@ class IPAddresss:
             address = self.getAddr(of1 + (of2 << 16))
             # 把GBK转为utf-8
             address = unicode(address, 'gbk').encode("utf-8")
-            print "%d\t%s\t%s" % (index, self.ip2str(ip), address)
+            logger.info("%d %s %s" % (index, self.ip2str(ip), address))
 
     def setIpRange(self, index):
         offset = self.firstIndex + index * 7

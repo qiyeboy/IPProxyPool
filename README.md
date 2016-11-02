@@ -20,6 +20,45 @@ apt-get install python-lxml
 ![](qiye2.jpg)
 <br/>
 希望大家提供更多的代理网站，现在爬取的好用的代理ip还是太少。
+
+## 如何使用
+
+将项目目录clone到当前文件夹
+
+$ git clone 
+
+切换工程目录
+
+```
+$ cd IPProxys
+```
+
+运行脚本
+
+```
+python IPProxys.py
+```
+
+## API 使用方法
+
+#### 模式
+```
+GET /
+```
+
+####参数 
+
+| Name | Type | Description |
+| -- | -- | -- |
+| types | int | 0: 高匿代理, 1 透明 |
+| protocol | int | 0: http, 1 https |
+| count | int | 数量 |
+| country | str | 国家 |
+| area | str | 国家 |
+
+#### 例子
+
+
 <br/>
 -----------------------------2016-10-27----------------------------
 <br/>

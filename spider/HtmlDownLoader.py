@@ -1,8 +1,10 @@
 #coding:utf-8
+
 import random
 import config
 import json
 __author__ = 'Xaxdus'
+
 import requests
 class Html_Downloader(object):
 
