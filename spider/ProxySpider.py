@@ -42,7 +42,7 @@ class ProxySpider(object):
                     proxys_tmp.extend(proxy)
 
                 proxys = proxys_tmp
-                logger.info('first_proxys: '%len(proxys))
+                logger.info('first_proxys: %s'%len(proxys))
                 #这个时候proxys的格式是[{},{},{},{},{},{}]
                 proxys_tmp=None
                 #这个时候开始去重:
