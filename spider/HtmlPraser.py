@@ -3,8 +3,10 @@ import datetime
 from config import QQWRY_PATH, CHINA_AREA
 
 from util.IPAddress import IPAddresss
-from util.logger import logger
 import re
+import logging
+logger = logging.getLogger('spider')
+
 __author__ = 'Xaxdus'
 from lxml import etree
 class Html_Parser(object):
@@ -26,8 +28,6 @@ class Html_Parser(object):
             return getattr(self,parser['moduleName'],None)(response,parser)
         else:
             return None
-
-
 
     def AuthCountry(self,addr):
         '''
@@ -84,7 +84,7 @@ class Html_Parser(object):
 
             # proxy ={'ip':ip,'port':int(port),'type':int(type),'protocol':int(protocol),'country':country,'area':area,'updatetime':updatetime,'speed':100}
             proxy ={'ip':ip,'port':int(port),'type':int(type),'protocol':int(protocol),'country':country,'area':area,'speed':100}
-            print proxy
+            logger.info("Fetch proxy %s" %str(proxy))
             proxylist.append(proxy)
 
         return proxylist
@@ -101,7 +101,7 @@ class Html_Parser(object):
         matchs = pattern.findall(response)
         if matchs !=None:
             for match in matchs:
-                print match
+                logging.info(str(match))
                 ip = match[parser['postion']['ip']]
                 port = match[parser['postion']['port']]
                 #网站的类型一直不靠谱所以还是默认，之后会检测
@@ -124,13 +124,15 @@ class Html_Parser(object):
                     country = addr
                     area = ''
                 proxy ={'ip':ip,'port':port,'type':type,'protocol':protocol,'country':country,'area':area,'speed':100}
-                print proxy
+                logger.info("Fetch proxy %s" % str(proxy))
                 proxylist.append(proxy)
             return proxylist
+
 
     def CnproxyPraser(self,response,parser):
         proxylist = self.RegularPraser(response,parser)
         chardict ={'v':'3','m':'4','a':'2','l':'9','q':'0','b':'5','i':'7','w':'6','r':'8','c':'1'}
+
         for proxy in proxylist:
             port = proxy['port']
             new_port = ''
