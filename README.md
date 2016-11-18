@@ -4,16 +4,28 @@ IPProxys代理池项目，提供代理ip
 详细使用方式，请看我的博客:
 http://www.cnblogs.com/qiyeboy/p/5693128.html
 <br/>
-linux debian下:
+##项目依赖：
 <br/>
-需要安装sqlite数据库:
+###ubuntu,debian下
+<br/>
+安装sqlite数据库:
 apt-get install sqlite sqlite3
 <br/>
-安装requests库
+安装requests库:
 pip install requests
 <br/>
 安装lxml
 apt-get install python-lxml
+<br/>
+###windows下
+<br/>
+下载[sqlite]{http://www.sqlite.org/download.html},路径添加到环境变量
+<br/>
+安装requests库:
+pip install requests
+<br/>
+安装lxml:
+pip install lxml或者下载[lxml windows版]{https://pypi.python.org/pypi/lxml/}
 <br/>
 我的微信公众号:
 <br/>
