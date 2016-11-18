@@ -80,6 +80,23 @@ GET /
 <br/>
 [{"ip": "220.160.22.115", "port": 80}, {"ip": "183.129.151.130", "port": 80}, {"ip": "59.52.243.88", "port": 80}, {"ip": "112.228.35.24", "port": 8888}, {"ip": "106.75.176.4", "port": 80}]
 <br/>
+```
+import requests
+import json
+r = requests.get('http://127.0.0.1:8000/?types=0&count=5&country=中国')
+ip_ports = json.loads(r.text)
+print ip_ports
+ip = ip_ports[0]['ip']
+port = ip_ports[0]['port']
+proxies={
+    'http':'http://%s:%s'%(ip,port),
+    'https':'http://%s:%s'%(ip,port)
+}
+r = requests.get('http://ip.chinaz.com/',proxies=proxies)
+r.encoding='utf-8'
+print r.text
+```
+
 ## 更新进度
 
 -----------------------------2016-10-27----------------------------
