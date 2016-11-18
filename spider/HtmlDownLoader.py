@@ -6,12 +6,15 @@ import json
 __author__ = 'Xaxdus'
 
 import requests
+import logging
+logger = logging.getLogger('download')
 class Html_Downloader(object):
 
     @classmethod
     def download(self,url):
         count = 0#重试次数
         r=''
+        logger.info("downloading url: %s",url)
         try:
             r = requests.get(url=url,headers=config.HEADER,timeout=config.TIMEOUT)
             r.encoding ='gbk'
