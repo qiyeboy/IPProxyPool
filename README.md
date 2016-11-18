@@ -4,6 +4,15 @@ IPProxys代理池项目，提供代理ip
 详细使用方式，请看我的博客:
 http://www.cnblogs.com/qiyeboy/p/5693128.html
 <br/>
+我的微信公众号:
+<br/>
+![](qiye2.jpg)
+<br/>
+希望大家提供更多的代理网站，现在爬取的好用的代理ip还是太少。
+
+<br/>
+同时感谢[super1-chen](https://github.com/super1-chen)对项目的贡献。
+<br/>
 ##项目依赖
 ####ubuntu,debian下
 <br/>
@@ -24,16 +33,6 @@ pip install requests
 <br/>
 安装lxml:
 pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
-<br/>
-我的微信公众号:
-<br/>
-![](qiye2.jpg)
-<br/>
-希望大家提供更多的代理网站，现在爬取的好用的代理ip还是太少。
-
-<br/>
-同时感谢[super1-chen](https://github.com/super1-chen)对项目的贡献。
-<br/>
 ## 如何使用
 
 将项目目录clone到当前文件夹
