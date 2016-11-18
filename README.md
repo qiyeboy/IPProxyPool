@@ -67,7 +67,7 @@ GET /
 | protocol | int | 0: http, 1 https |
 | count | int | 数量 |
 | country | str | 国家 |
-| area | str | 国家 |
+| area | str | 地区 |
 
 
 
