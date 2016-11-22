@@ -22,6 +22,11 @@ apt-get install sqlite sqlite3
 安装requests库:
 pip install requests
 <br/>
+安装gevent库:
+pip install gevent
+<br/>
+有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新
+<br/>
 安装lxml:
 apt-get install python-lxml
 <br/>
@@ -30,6 +35,11 @@ apt-get install python-lxml
 <br/>
 安装requests库:
 pip install requests
+<br/>
+安装gevent库:
+pip install gevent
+<br/>
+有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新
 <br/>
 安装lxml:
 pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
@@ -103,7 +113,6 @@ print r.text
 <br/>
 3.增加更多代理网站和数据库适配
 ## 更新进度
-
 -----------------------------2016-10-27----------------------------
 <br/>
 1.增加对代理的检测，测试是否能真正访问到网址，实现代理
