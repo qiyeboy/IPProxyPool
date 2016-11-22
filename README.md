@@ -1,5 +1,5 @@
 ﻿# IPProxys
-IPProxys代理池项目，提供代理ip
+IPProxys代理池项目，提供代理ip。使用python2.7.x开发
 <br/>
 详细使用方式，请看我的博客:
 http://www.cnblogs.com/qiyeboy/p/5693128.html
@@ -105,11 +105,13 @@ r.encoding='utf-8'
 print r.text
 ```
 ## TODO
-1.可自主选择添加squid反向代理服务器，简化爬虫配置
+1.添加对Python3.x的支持
 <br/>
-2.重构HTTP API接口
+2.可自主选择添加squid反向代理服务器，简化爬虫配置
 <br/>
-3.增加更多代理网站和数据库适配
+3.重构HTTP API接口
+<br/>
+4.增加更多代理网站和数据库适配
 ## 更新进度
 -----------------------------2016-10-27----------------------------
 <br/>
