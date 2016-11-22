@@ -22,12 +22,12 @@ apt-get install sqlite3
 安装requests库:
 pip install requests
 <br/>
+安装lxml:
+apt-get install python-lxml
+<br/>
 安装gevent库:
 pip install gevent
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
-<br/>
-安装lxml:
-apt-get install python-lxml
 <br/>
 ####windows下
 下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
@@ -35,12 +35,12 @@ apt-get install python-lxml
 安装requests库:
 pip install requests
 <br/>
+安装lxml:
+pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
+<br/>
 安装gevent库:
 pip install gevent
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
-<br/>
-安装lxml:
-pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
 ## 如何使用
 
 将项目目录clone到当前文件夹
