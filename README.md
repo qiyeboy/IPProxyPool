@@ -16,8 +16,8 @@ http://www.cnblogs.com/qiyeboy/p/5693128.html
 ##项目依赖
 ####ubuntu,debian下
 <br/>
-安装sqlite数据库:
-apt-get install sqlite sqlite3
+安装sqlite数据库(一般系统内置):
+apt-get install sqlite3
 <br/>
 安装requests库:
 pip install requests
