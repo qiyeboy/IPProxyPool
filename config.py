@@ -12,13 +12,13 @@ ip，端口，类型(0高匿名，1透明)，protocol(0 http,1 https),country(�
 '''
 parserList = [
         {
-            'urls': ['http://www.66ip.cn/%s.html'% n for n in ['index']+range(2,12)],
+            'urls': ['http://m.66ip.cn/%s.html'% n for n in ['index']+range(2,12)],
             'type':'xpath',
-            'pattern': ".//*[@id='main']/div/div[1]/table/tr[position()>1]",
+            'pattern': ".//*[@class='profit-c']/table/tr[position()>1]",
             'postion':{'ip':'./td[1]','port':'./td[2]','type':'./td[4]','protocol':''}
         },
         {
-            'urls': ['http://www.66ip.cn/areaindex_%s/%s.html'%(m,n) for m in range(1,35) for n in range(1,10)],
+            'urls': ['http://m.66ip.cn/areaindex_%s/%s.html'%(m,n) for m in range(1,35) for n in range(1,10)],
             'type':'xpath',
             'pattern': ".//*[@id='footer']/div/table/tr[position()>1]",
             'postion':{'ip':'./td[1]','port':'./td[2]','type':'./td[4]','protocol':''}
@@ -90,7 +90,7 @@ API_PORT=8000
 '''
 UPDATE_TIME=20*60#每半个小时检测一次是否有代理ip失效
 MINNUM = 50 #当有效的ip值小于一个时 需要启动爬虫进行爬取
-MAXTIME = 24*60 #当爬取存储开始一直使用的最大时间，如果超过这个时间，都删除
+MAXTIME = 3*24*60 #当爬取存储开始一直使用的最大时间，如果超过这个时间，都删除
 
 TIMEOUT = 5#socket延时
 

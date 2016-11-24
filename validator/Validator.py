@@ -76,7 +76,7 @@ class Validator(object):
         '''
         ip = result[0]
         port = str(result[1])
-        proxies={"http": "http://%s:%s"%(ip,port)}
+        proxies={"http": "http://%s:%s"%(ip,port),"https": "http://%s:%s"%(ip,port)}
 
         start = time.time()
         try:
@@ -107,7 +107,7 @@ class Validator(object):
 
         ip = proxy['ip']
         port = proxy['port']
-        proxies={"http": "http://%s:%s"%(ip,port)}
+        proxies={"http": "http://%s:%s"%(ip,port),"https": "http://%s:%s"%(ip,port)}
         proxyType = self.checkProxyType(proxies)
         if proxyType==3:
             logger.info('failed %s:%s'%(ip,port))

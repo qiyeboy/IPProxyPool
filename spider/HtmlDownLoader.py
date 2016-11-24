@@ -7,6 +7,7 @@ __author__ = 'Xaxdus'
 
 import requests
 import logging
+import chardet
 logger = logging.getLogger('download')
 class Html_Downloader(object):
 
@@ -17,7 +18,7 @@ class Html_Downloader(object):
         logger.info("downloading url: %s",url)
         try:
             r = requests.get(url=url,headers=config.HEADER,timeout=config.TIMEOUT)
-            r.encoding ='gbk'
+            r.encoding =chardet.detect(r.content)['encoding']
             while count< config.RETRY_TIME:
                 if (not r.ok) or len(r.content)<500 :
                     response = requests.get("http://127.0.0.1:%s/?types=0&count=10"%config.API_PORT)
