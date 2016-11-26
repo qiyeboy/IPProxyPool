@@ -53,14 +53,14 @@ class Html_Parser(object):
         proxylist=[]
         root = etree.HTML(response)
         proxys = root.xpath(parser['pattern'])
-        print proxys
+        # print proxys
         for proxy in proxys:
             # print parser['postion']['ip']
             try:
                 ip = proxy.xpath(parser['postion']['ip'])[0].text
                 port = proxy.xpath(parser['postion']['port'])[0].text
                 type = proxy.xpath(parser['postion']['type'])[0].text
-                print ip,port,type
+                # print ip,port,type
                 if type.find(u'高匿')!=-1:
                     type = 0
                 else:
@@ -84,8 +84,7 @@ class Html_Parser(object):
                     country = addr
                     area = ''
             except Exception,e:
-
-                print e
+                logger.warning(str(e))
                 continue
             # updatetime = datetime.datetime.now()
             # ip，端口，类型(0高匿名，1透明)，protocol(0 http,1 https http),country(国家),area(省市),updatetime(更新时间)
