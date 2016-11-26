@@ -28,7 +28,7 @@ class Html_Downloader(object):
                         proxies={"https": "http://%s:%s"%(choose[0],choose[1])}
                         try:
                             r = requests.get(url=url,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
-                            r.encoding ='gbk'
+                            r.encoding =chardet.detect(r.content)['encoding']
                             count += 1
                         except Exception,e:
                              count += 1
@@ -52,7 +52,7 @@ class Html_Downloader(object):
                             proxies={"https": "http://%s:%s"%(choose[0],choose[1])}
                             try:
                                 r = requests.get(url=url,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
-                                r.encoding ='gbk'
+                                r.encoding =chardet.detect(r.content)['encoding']
                                 count += 1
                             except Exception,e:
                                  count += 1
