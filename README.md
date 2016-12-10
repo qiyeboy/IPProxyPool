@@ -21,23 +21,23 @@ http://www.cnblogs.com/qiyeboy/p/5693128.html
 ##项目依赖
 ####ubuntu,debian
 <br/>
-安装sqlite数据库(一般系统内置):
+* 安装sqlite数据库(一般系统内置):
 apt-get install sqlite3
 <br/>
-安装requests,chardet,web.py,gevent:
+* 安装requests,chardet,web.py,gevent:
 pip install requests chardet web.py sqlalchemy gevent
 <br/>
-安装lxml:
+* 安装lxml:
 apt-get install python-lxml
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 <br/>
 ####windows
-下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
+* 下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
 <br/>
-安装requests,chardet,web.py,gevent:
+* 安装requests,chardet,web.py,gevent:
 pip install requests chardet web.py sqlalchemy gevent
 <br/>
-安装lxml:
+* 安装lxml:
 pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 ####扩展说明
@@ -201,9 +201,13 @@ print r.text
 -----------------------------2016-12-11----------------------------
 ####大规模重构，主要包括以下几个方面：
 1.使用多进程+协程的方式，将爬取和验证的效率提高了50倍以上，可以在几分钟之内获取所有的有效IP
+<br/>
 2.使用web.py作为API服务器，重构HTTP接口
+<br/>
 3.增加Mysql,MongoDB等数据库的适配
+<br/>
 4.增加了三个代理网站
+<br/>
 5.增加评分机制，评比稳定的ip
 <br/>
 -----------------------------2016-11-24----------------------------
