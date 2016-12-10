@@ -1,2 +1,5 @@
 requests
+chardet
+web.py
+sqlalchemy
 

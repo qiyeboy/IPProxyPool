@@ -1,52 +1,89 @@
-﻿# IPProxys
-IPProxys代理池项目，提供代理ip。使用python2.7.x开发
+﻿# IPProxyPool
+IPProxyPool代理池项目，提供代理ip。使用python2.7.x开发,之后会支持python3。
+<br/>
+由于验证ip匿名性的网站挂掉了，因此现在抓取的ip无法判断是否匿名，特此说明。
+<br/>
+如果大家有验证ip匿名性的网站，请及时通知我。
 <br/>
 详细使用方式，请看我的博客:
 http://www.cnblogs.com/qiyeboy/p/5693128.html
 <br/>
-我的微信公众号:
+最近几周我会比较忙，会陆续将添加更多功能，敬请期待。大家可以关注我的公众号，更新我会及时通知。
+####我的微信公众号:
 <br/>
 ![](qiye2.jpg)
 <br/>
 希望大家提供更多的代理网站，现在爬取的好用的代理ip还是太少。
-
 <br/>
-同时感谢[super1-chen](https://github.com/super1-chen)对项目的贡献。
+同时感谢[super1-chen](https://github.com/super1-chen),[fancoo](https://github.com/fancoo),[Leibnizhu](https://github.com/Leibnizhu)对项目的贡献。
 <br/>
 ##项目依赖
-####ubuntu,debian下
+####ubuntu,debian
 <br/>
 安装sqlite数据库(一般系统内置):
 apt-get install sqlite3
 <br/>
-安装requests库:
-pip install requests
-<br/>
-安装chardet库:
-pip install chardet
+安装requests,chardet,web.py,gevent:
+pip install requests chardet web.py sqlalchemy gevent
 <br/>
 安装lxml:
 apt-get install python-lxml
-<br/>
-安装gevent库:
-pip install gevent
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 <br/>
-####windows下
+####windows
 下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
 <br/>
-安装requests库:
-pip install requests
-<br/>
-安装chardet库:
-pip install chardet
+安装requests,chardet,web.py,gevent:
+pip install requests chardet web.py sqlalchemy gevent
 <br/>
 安装lxml:
 pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
-<br/>
-安装gevent库:
-pip install gevent
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
+####扩展说明
+本项目默认数据库是sqlite，但是采用sqlalchemy的ORM模型，通过预留接口可以拓展使用MySQL，MongoDB等数据库。
+配置方法：
+1.MySQL配置
+```
+第一步：首先安装MySQL数据库并启动
+第二步：安装MySQLdb或者pymysql(推荐)
+第三步：在config.py文件中配置DB_CONFIG。如果安装的是MySQLdb模块，配置如下：
+        DB_CONFIG={
+            'DB_CONNECT_TYPE':'sqlalchemy',
+            'DB_CONNECT_STRING' = 'mysql+mysqldb://root:root@localhost/proxy?charset=utf8'
+        }
+        如果安装的是pymysql模块，配置如下：
+         DB_CONFIG={
+            'DB_CONNECT_TYPE':'sqlalchemy',
+            'DB_CONNECT_STRING' = 'mysql+pymysql://root:root@localhost/proxy?charset=utf8'
+        }
+```
+sqlalchemy下的DB_CONNECT_STRING参考[支持数据库](http://docs.sqlalchemy.org/en/latest/core/engines.html#supported-databases)，理论上使用这种配置方式不只是适配MySQL，sqlalchemy支持的数据库都可以，但是仅仅测试过MySQL。
+2.MongoDB配置
+```
+第一步：首先安装MongoDB数据库并启动
+第二步：安装pymongo模块
+第三步：在config.py文件中配置DB_CONFIG。配置类似如下：
+        DB_CONFIG={
+            'DB_CONNECT_TYPE':'pymongo',
+            'DB_CONNECT_STRING' = 'mongodb://localhost:27017/'
+        }
+```
+由于sqlalchemy并不支持MongoDB,因此额外添加了pymongo模式，DB_CONNECT_STRING参考pymongo的连接字符串。
+#####注意
+如果大家想拓展其他数据库，可以直接继承db下ISqlHelper类，实现其中的方法，具体实现参考我的代码，然后在DataStore中导入类即可。
+```
+try:
+    if DB_CONFIG['DB_CONNECT_TYPE'] == 'pymongo':
+        from db.MongoHelper import MongoHelper as SqlHelper
+    else:
+        from db.SqlHelper import SqlHelper as SqlHelper
+    sqlhelper = SqlHelper()
+    sqlhelper.init_db()
+except Exception,e:
+    raise Con_DB_Fail
+```
+有感兴趣的朋友，可以将Redis的实现方式添加进来。
+
 ## 如何使用
 
 将项目目录clone到当前文件夹
@@ -56,22 +93,22 @@ $ git clone
 切换工程目录
 
 ```
-$ cd IPProxys
+$ cd IPProxyPool
 ```
 
 运行脚本
 
 ```
-python IPProxys.py
+python IPProxy.py
 ```
 
 ## API 使用方法
 
-#### 模式
+#### 第一种模式
 ```
 GET /
 ```
-
+这种模式用于查询代理ip数据，同时加入评分机制，返回数据的顺序是按照评分由高到低，速度由快到慢制定的。
 ####参数 
 
 
@@ -86,22 +123,23 @@ GET /
 
 
 #### 例子
-#####IPProxys默认端口为8000
+#####IPProxys默认端口为8000，端口可以在config.py中配置。
 #####如果是在本机上测试：
 1.获取5个ip地址在中国的高匿代理：http://127.0.0.1:8000/?types=0&count=5&country=中国
 <br/>
-2.响应为JSON格式，按照响应速度由高到低，返回数据：
+2.响应为JSON格式，按照评分由高到低，响应速度由高到低的顺序，返回数据：
 <br/>
-[{"ip": "220.160.22.115", "port": 80}, {"ip": "183.129.151.130", "port": 80}, {"ip": "59.52.243.88", "port": 80}, {"ip": "112.228.35.24", "port": 8888}, {"ip": "106.75.176.4", "port": 80}]
+[["122.226.189.55", 138, 10], ["183.61.236.54", 3128, 10], ["61.132.241.109", 808, 10], ["183.61.236.53", 3128, 10], ["122.227.246.102", 808, 10]]
 <br/>
+以["122.226.189.55", 138, 10]为例，第一个元素是ip,第二个元素是port，第三个元素是分值score。
 ```
 import requests
 import json
 r = requests.get('http://127.0.0.1:8000/?types=0&count=5&country=中国')
 ip_ports = json.loads(r.text)
 print ip_ports
-ip = ip_ports[0]['ip']
-port = ip_ports[0]['port']
+ip = ip_ports[0][0]
+port = ip_ports[0][1]
 proxies={
     'http':'http://%s:%s'%(ip,port),
     'https':'http://%s:%s'%(ip,port)
@@ -110,15 +148,52 @@ r = requests.get('http://ip.chinaz.com/',proxies=proxies)
 r.encoding='utf-8'
 print r.text
 ```
+#### 第二种模式
+```
+GET /delete
+```
+这种模式用于方便用户根据自己的需求删除代理ip数据
+####参数 
+
+
+| Name | Type | Description |
+| ----| ---- | ---- |
+| ip | str | 类似192.168.1.1 |
+| port | int | 类似 80 |
+| types | int | 0: 高匿代理, 1 透明 |
+| protocol | int | 0: http, 1 https |
+| count | int | 数量 |
+| country | str | 国家 |
+| area | str | 地区 |
+大家可以根据指定以上一种或几种方式删除数据。
+#### 例子
+#####如果是在本机上测试：
+1.删除ip为120.92.3.127的代理：http://127.0.0.1:8000/delete?ip=120.92.3.127
+<br/>
+2.响应为JSON格式，返回删除的结果为成功,失败或者返回删除的个数,类似如下的效果：
+
+["deleteNum", "ok"]或者["deleteNum", 1]
+```
+import requests
+r = requests.get('http://127.0.0.1:8000/delete?ip=120.92.3.127')
+print r.text
+```
+
 ## TODO
 1.添加对Python3.x的支持
 <br/>
 2.可自主选择添加squid反向代理服务器，简化爬虫配置
 <br/>
-3.重构HTTP API接口
-<br/>
-4.增加更多代理网站和数据库适配
+
+
 ## 更新进度
+-----------------------------2016-12-11----------------------------
+1.使用多进程+协程的方式，将爬取和验证的效率提高了50倍以上，可以在几分钟之内获取所有的有效IP
+2.使用web.py作为API服务器，重构HTTP接口
+3.增加Mysql,MongoDB等数据库的适配
+4.增加了三个代理网站
+5.增加评分机制，评比稳定的ip
+<br/>
 -----------------------------2016-11-24----------------------------
 <br/>
 1.增加chardet识别网页编码
