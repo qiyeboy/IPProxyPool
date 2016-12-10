@@ -21,23 +21,23 @@ http://www.cnblogs.com/qiyeboy/p/5693128.html
 ##项目依赖
 ####ubuntu,debian
 <br/>
-* 安装sqlite数据库(一般系统内置):
+1.安装sqlite数据库(一般系统内置):
 apt-get install sqlite3
 <br/>
-* 安装requests,chardet,web.py,gevent:
+2.安装requests,chardet,web.py,gevent:
 pip install requests chardet web.py sqlalchemy gevent
 <br/>
-* 安装lxml:
+3.安装lxml:
 apt-get install python-lxml
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 <br/>
 ####windows
-* 下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
+1.下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
 <br/>
-* 安装requests,chardet,web.py,gevent:
+2.安装requests,chardet,web.py,gevent:
 pip install requests chardet web.py sqlalchemy gevent
 <br/>
-* 安装lxml:
+3.安装lxml:
 pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
 ######(有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 ####扩展说明
