@@ -43,6 +43,7 @@ pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/
 ####扩展说明
 本项目默认数据库是sqlite，但是采用sqlalchemy的ORM模型，通过预留接口可以拓展使用MySQL，MongoDB等数据库。
 配置方法：
+<br/>
 1.MySQL配置
 ```
 第一步：首先安装MySQL数据库并启动
@@ -59,6 +60,7 @@ pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/
         }
 ```
 sqlalchemy下的DB_CONNECT_STRING参考[支持数据库](http://docs.sqlalchemy.org/en/latest/core/engines.html#supported-databases)，理论上使用这种配置方式不只是适配MySQL，sqlalchemy支持的数据库都可以，但是仅仅测试过MySQL。
+<br/>
 2.MongoDB配置
 ```
 第一步：首先安装MongoDB数据库并启动
