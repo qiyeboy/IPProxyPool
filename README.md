@@ -31,10 +31,9 @@ pip install requests chardet web.py sqlalchemy gevent
 apt-get install python-lxml
 <br/>
 注意：
-<br/>
 * 有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 * 在python3中安装web.py，不能使用pip，直接下载py3版本的[源码](https://codeload.github.com/webpy/webpy/zip/py3)进行安装
-<br/>
+
 ####windows
 1.下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
 <br/>
@@ -45,9 +44,10 @@ pip install requests chardet web.py sqlalchemy gevent
 pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/)
 <br/>
 注意：
-<br/>
+
 * 有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 * 在python3中安装web.py，不能使用pip，直接下载py3版本的[源码](https://codeload.github.com/webpy/webpy/zip/py3)进行安装
+
 ####扩展说明
 本项目默认数据库是sqlite，但是采用sqlalchemy的ORM模型，通过预留接口可以拓展使用MySQL，MongoDB等数据库。
 配置方法：
