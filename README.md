@@ -19,7 +19,7 @@ http://www.cnblogs.com/qiyeboy/p/5693128.html
 同时感谢[super1-chen](https://github.com/super1-chen),[fancoo](https://github.com/fancoo),[Leibnizhu](https://github.com/Leibnizhu)对项目的贡献。
 <br/>
 ##项目依赖
-####ubuntu,debian
+####Ubuntu,debian
 <br/>
 1.安装sqlite数据库(一般系统内置):
 apt-get install sqlite3
@@ -31,10 +31,12 @@ pip install requests chardet web.py sqlalchemy gevent
 apt-get install python-lxml
 <br/>
 注意：
+
+* python3下的是pip3
 * 有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 * 在python3中安装web.py，不能使用pip，直接下载py3版本的[源码](https://codeload.github.com/webpy/webpy/zip/py3)进行安装
 
-####windows
+####Windows
 1.下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
 <br/>
 2.安装requests,chardet,web.py,gevent:
@@ -45,6 +47,7 @@ pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/
 <br/>
 注意：
 
+* python3下的是pip3
 * 有时候使用的gevent版本过低会出现自动退出情况，请使用pip install gevent --upgrade更新)
 * 在python3中安装web.py，不能使用pip，直接下载py3版本的[源码](https://codeload.github.com/webpy/webpy/zip/py3)进行安装
 
@@ -105,6 +108,7 @@ $ git clone
 
 ```
 $ cd IPProxyPool
+$ cd IPProxyPool_py2 或者 cd IPProxyPool_py3
 ```
 
 运行脚本
