@@ -1,5 +1,5 @@
 ﻿# IPProxyPool
-IPProxyPool代理池项目，提供代理ip。使用python2.7.x开发,之后会支持python3。
+IPProxyPool代理池项目，提供代理ip。支持py2和py3两个版本。
 <br/>
 由于验证ip匿名性的网站挂掉了，因此现在抓取的ip无法判断是否匿名，特此说明。
 <br/>
@@ -193,9 +193,7 @@ print r.text
 ```
 
 ## TODO
-1.添加对Python3.x的支持
-<br/>
-2.可自主选择添加squid反向代理服务器，简化爬虫配置
+1.可自主选择添加squid反向代理服务器，简化爬虫配置
 <br/>
 
 
