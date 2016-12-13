@@ -62,12 +62,12 @@ pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/
 第三步：在config.py文件中配置DB_CONFIG。如果安装的是MySQLdb模块，配置如下：
         DB_CONFIG={
             'DB_CONNECT_TYPE':'sqlalchemy',
-            'DB_CONNECT_STRING' = 'mysql+mysqldb://root:root@localhost/proxy?charset=utf8'
+            'DB_CONNECT_STRING':'mysql+mysqldb://root:root@localhost/proxy?charset=utf8'
         }
         如果安装的是pymysql模块，配置如下：
          DB_CONFIG={
             'DB_CONNECT_TYPE':'sqlalchemy',
-            'DB_CONNECT_STRING' = 'mysql+pymysql://root:root@localhost/proxy?charset=utf8'
+            'DB_CONNECT_STRING':'mysql+pymysql://root:root@localhost/proxy?charset=utf8'
         }
 ```
 sqlalchemy下的DB_CONNECT_STRING参考[支持数据库](http://docs.sqlalchemy.org/en/latest/core/engines.html#supported-databases)，理论上使用这种配置方式不只是适配MySQL，sqlalchemy支持的数据库都可以，但是仅仅测试过MySQL。
@@ -79,7 +79,7 @@ sqlalchemy下的DB_CONNECT_STRING参考[支持数据库](http://docs.sqlalchemy.
 第三步：在config.py文件中配置DB_CONFIG。配置类似如下：
         DB_CONFIG={
             'DB_CONNECT_TYPE':'pymongo',
-            'DB_CONNECT_STRING' = 'mongodb://localhost:27017/'
+            'DB_CONNECT_STRING':'mongodb://localhost:27017/'
         }
 ```
 由于sqlalchemy并不支持MongoDB,因此额外添加了pymongo模式，DB_CONNECT_STRING参考pymongo的连接字符串。
