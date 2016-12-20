@@ -1,12 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
+import os
 
 import socket
 import struct
 
 import logging
+
+
 logger = logging.getLogger('util')
 
 class IPAddresss:
@@ -141,5 +142,7 @@ class IPAddresss:
         (a, b) = struct.unpack('HB', str)
         return (b << 16) + a
 
-
-
+QQWRY_PATH=os.path.dirname(__file__)+"/../data/qqwry.dat"
+ips = IPAddresss(QQWRY_PATH)
+addr = ips.getIpAddr(ips.str2ip('183.61.236.53'))
+print(addr)

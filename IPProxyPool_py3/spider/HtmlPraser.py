@@ -57,6 +57,8 @@ class Html_Parser(object):
             try:
                 ip = proxy.xpath(parser['position']['ip'])[0].text
                 port = proxy.xpath(parser['position']['port'])[0].text
+                # print(ip,port)
+                 # print proxys
                 # type = proxy.xpath(parser['postion']['type'])[0].text
                 # # print ip,port,type
                 # if type.find(u'高匿')!=-1:
@@ -83,6 +85,7 @@ class Html_Parser(object):
                     country = addr
                     area = ''
             except Exception as e:
+
                 continue
             # updatetime = datetime.datetime.now()
             # ip，端口，类型(0高匿名，1透明)，protocol(0 http,1 https http),country(国家),area(省市),updatetime(更新时间)
