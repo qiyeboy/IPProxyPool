@@ -107,27 +107,31 @@ class Html_Parser(object):
         matchs = pattern.findall(response)
         if matchs !=None:
             for match in matchs:
-                ip = match[parser['position']['ip']]
-                port = match[parser['position']['port']]
-                #网站的类型一直不靠谱所以还是默认，之后会检测
-                type =0
-                # if parser['postion']['protocol'] > 0:
-                #     protocol = match[parser['postion']['protocol']]
-                #     if protocol.lower().find('https')!=-1:
-                #         protocol = 1
-                #     else:
-                #         protocol = 0
-                # else:
-                protocol = 0
-                addr = self.ips.getIpAddr(self.ips.str2ip(ip))
-                country = ''
-                area = ''
-                if addr.find('省')!=-1 or self.AuthCountry(addr):
-                    country = '中国'
-                    area = addr
-                else:
-                    country = addr
+                try:
+                    ip = match[parser['position']['ip']]
+                    port = match[parser['position']['port']]
+                    #网站的类型一直不靠谱所以还是默认，之后会检测
+                    type =0
+                    # if parser['postion']['protocol'] > 0:
+                    #     protocol = match[parser['postion']['protocol']]
+                    #     if protocol.lower().find('https')!=-1:
+                    #         protocol = 1
+                    #     else:
+                    #         protocol = 0
+                    # else:
+                    protocol = 0
+                    addr = self.ips.getIpAddr(self.ips.str2ip(ip))
+                    country = ''
                     area = ''
+                    if addr.find('省')!=-1 or self.AuthCountry(addr):
+                        country = '中国'
+                        area = addr
+                    else:
+                        country = addr
+                        area = ''
+                except Exception as e:
+                    continue
+
                 proxy ={'ip':ip,'port':port,'types':type,'protocol':protocol,'country':country,'area':area,'speed':100}
 
                 proxylist.append(proxy)
@@ -155,22 +159,24 @@ class Html_Parser(object):
         matchs = pattern.findall(response)
         if matchs:
             for match in matchs:
-                ip_port = base64.b64decode(match.replace("Proxy('","").replace("')",""))
-                ip = ip_port.split(':')[0]
-                port = ip_port.split(':')[1]
-                type =0
-                protocol = 0
-                addr = self.ips.getIpAddr(self.ips.str2ip(ip))
-                country = ''
-                area = ''
-                if addr.find('省')!=-1 or self.AuthCountry(addr):
-                    country = '中国'
-                    area = addr
-                else:
-                    country = addr
+                try:
+                    ip_port = base64.b64decode(match.replace("Proxy('","").replace("')",""))
+                    ip = ip_port.split(':')[0]
+                    port = ip_port.split(':')[1]
+                    type =0
+                    protocol = 0
+                    addr = self.ips.getIpAddr(self.ips.str2ip(ip))
+                    country = ''
                     area = ''
+                    if addr.find('省')!=-1 or self.AuthCountry(addr):
+                        country = '中国'
+                        area = addr
+                    else:
+                        country = addr
+                        area = ''
+                except Exception as e:
+                    continue
                 proxy ={'ip':ip,'port':int(port),'types':type,'protocol':protocol,'country':country,'area':area,'speed':100}
-
                 proxylist.append(proxy)
             return proxylist
 
