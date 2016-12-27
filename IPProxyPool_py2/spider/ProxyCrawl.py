@@ -43,7 +43,8 @@ class ProxyCrawl(object):
             spawns = []
             for proxy in proxylist:
                 spawns.append(
-                    gevent.spawn(detect_from_db, myip, proxy, self.proxies))
+                    gevent.spawn(detect_from_db, myip, proxy, self.proxies)
+                )
             gevent.joinall(spawns)
             self.db_proxy_num.value = len(self.proxies)
             str = u'IPProxyPool----->>>>>>>>db exists ip:%d' % len(
@@ -65,14 +66,16 @@ class ProxyCrawl(object):
         html_parser = Html_Parser()
         for url in parser['urls']:
             response = Html_Downloader.download(url)
-            if response != None:
-                proxylist = html_parser.parse(response, parser)
-                if proxylist != None:
-                    for proxy in proxylist:
-                        proxy_str = '%s:%s' % (proxy['ip'], proxy['port'])
-                        if proxy_str not in self.proxies:
-                            self.proxies.add(proxy_str)
-                            self.queue.put(proxy)
+            if not response:
+                continue
+            proxylist = html_parser.parse(response, parser)
+            if not proxylist:
+                continue
+            for proxy in proxylist:
+                proxy_str = '%s:%s' % (proxy['ip'], proxy['port'])
+                if proxy_str not in self.proxies:
+                    self.proxies.add(proxy_str)
+                    self.queue.put(proxy)
 
 
 if __name__ == "__main__":

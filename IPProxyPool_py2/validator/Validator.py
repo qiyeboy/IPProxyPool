@@ -20,7 +20,7 @@ monkey.patch_all()
 
 def detect_from_db(myip, proxy, proxies_set):
     proxy_dict = {'ip': proxy[0], 'port': proxy[1]}
-    result = detect_list(myip, proxy_dict)
+    result = detect_proxy(myip, proxy_dict)
     if result:
         if proxy[2] < 60000:
             score = proxy[2] + 1
@@ -57,11 +57,11 @@ def validator(queue1, queue2):
 def process_start(tasks, myip, queue2):
     spawns = []
     for task in tasks:
-        spawns.append(gevent.spawn(detect_list, myip, task, queue2))
+        spawns.append(gevent.spawn(detect_proxy, myip, task, queue2))
     gevent.joinall(spawns)
 
 
-def detect_list(selfip, proxy, queue2=None):
+def detect_proxy(selfip, proxy, queue2=None):
     '''
     :param proxy: ip字典
     :return:
@@ -125,10 +125,10 @@ def checkProxyType(selfip, proxies):
                 return 3
             if http_x_forwared_for is None and http_via is None:
                 return 0
-            if http_via != None and http_x_forwared_for.find(selfip) == -1:
+            if http_via is not None and http_x_forwared_for.find(selfip) == -1:
                 return 1
 
-            if http_via != None and http_x_forwared_for.find(selfip) != -1:
+            if http_via is not None and http_x_forwared_for.find(selfip) != -1:
                 return 2
         return 3
 
@@ -147,7 +147,6 @@ def getMyIP():
             ip = match.group()
             return ip
         else:
-
             raise Test_URL_Fail
     except Exception, e:
         raise Test_URL_Fail

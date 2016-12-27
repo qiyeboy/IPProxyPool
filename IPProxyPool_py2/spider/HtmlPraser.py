@@ -2,11 +2,11 @@
 import re
 import base64
 
+from lxml import etree
 from util.IPAddress import IPAddresss
 from config import QQWRY_PATH, CHINA_AREA
 
 __author__ = 'qiye'
-from lxml import etree
 
 
 class Html_Parser(object):
@@ -110,7 +110,7 @@ class Html_Parser(object):
         proxylist = []
         pattern = re.compile(parser['pattern'])
         matchs = pattern.findall(response)
-        if matchs != None:
+        if matchs is not None:
             for match in matchs:
                 ip = match[parser['position']['ip']]
                 port = match[parser['position']['port']]
