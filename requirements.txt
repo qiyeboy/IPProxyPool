@@ -2,4 +2,4 @@ requests
 chardet
 web.py
 sqlalchemy
-
+gevent
