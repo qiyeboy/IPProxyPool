@@ -33,7 +33,7 @@ def detect_from_db(myip, proxy, proxies_set):
         sqlhelper.delete({'ip': proxy[0], 'port': proxy[1]})
 
 
-def validator(queue1, queue2):
+def validator(queue1, queue2, failed_ip_num):
     tasklist = []
     myip = getMyIP()
     while True:
@@ -43,25 +43,28 @@ def validator(queue1, queue2):
             tasklist.append(proxy)
             if len(tasklist) > 500:
                 p = Process(
-                    target=process_start, args=(tasklist, myip, queue2))
+                    target=process_start,
+                    args=(tasklist, myip, queue2, failed_ip_num))
                 p.start()
                 tasklist = []
         except Exception, e:
             if len(tasklist) > 0:
                 p = Process(
-                    target=process_start, args=(tasklist, myip, queue2))
+                    target=process_start,
+                    args=(tasklist, myip, queue2, failed_ip_num))
                 p.start()
                 tasklist = []
 
 
-def process_start(tasks, myip, queue2):
+def process_start(tasks, myip, queue2, failed_ip_num):
     spawns = []
     for task in tasks:
-        spawns.append(gevent.spawn(detect_proxy, myip, task, queue2))
+        spawns.append(
+            gevent.spawn(detect_proxy, myip, task, queue2, failed_ip_num))
     gevent.joinall(spawns)
 
 
-def detect_proxy(selfip, proxy, queue2=None):
+def detect_proxy(selfip, proxy, queue2=None, failed_ip_num=None):
     '''
     :param proxy: ip字典
     :return:
@@ -89,16 +92,17 @@ def detect_proxy(selfip, proxy, queue2=None):
                          proxies=proxies)
 
         if not r.ok or r.text.find(ip) == -1:
-            proxy = None
+            if failed_ip_num is not None:
+                failed_ip_num.value += 1
         else:
             speed = round(time.time() - start, 2)
             proxy['speed'] = speed
+            if queue2:
+                queue2.put(proxy)
+            return proxy
     except Exception, e:
-        proxy = None
-
-    if queue2:
-        queue2.put(proxy)
-    return proxy
+        if failed_ip_num is not None:
+            failed_ip_num.value += 1
 
 
 def checkProxyType(selfip, proxies):
