@@ -41,11 +41,12 @@ def validator(queue1, queue2, failed_ip_num):
             # proxy_dict = {'source':'crawl','data':proxy}
             proxy = queue1.get(timeout=10)
             tasklist.append(proxy)
-            if len(tasklist) > 500:
+            if len(tasklist) > 50:
                 p = Process(
                     target=process_start,
                     args=(tasklist, myip, queue2, failed_ip_num))
                 p.start()
+                p.join()
                 tasklist = []
         except Exception, e:
             if len(tasklist) > 0:
@@ -62,6 +63,18 @@ def process_start(tasks, myip, queue2, failed_ip_num):
         spawns.append(
             gevent.spawn(detect_proxy, myip, task, queue2, failed_ip_num))
     gevent.joinall(spawns)
+
+
+def get_self_ip():
+    r = requests.get(
+        url=TEST_URL,
+        headers=config.HEADER,
+        timeout=config.TIMEOUT,
+    )
+    print r.text
+    return re.findall(r"\d+\.\d+\.\d+\.\d+", r.text)[0]
+
+MY_IP = get_self_ip()
 
 
 def detect_proxy(selfip, proxy, queue2=None, failed_ip_num=None):
@@ -91,7 +104,7 @@ def detect_proxy(selfip, proxy, queue2=None, failed_ip_num=None):
                          timeout=config.TIMEOUT,
                          proxies=proxies)
 
-        if not r.ok or r.text.find(ip) == -1:
+        if not r.ok or r.text.find(MY_IP) > -1:
             if failed_ip_num is not None:
                 failed_ip_num.value += 1
         else:
