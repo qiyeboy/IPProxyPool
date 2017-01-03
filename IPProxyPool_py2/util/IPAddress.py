@@ -1,19 +1,20 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
+
 import socket
 import struct
 
 import logging
 logger = logging.getLogger('util')
 
-
 class IPAddresss:
     def __init__(self, ipdbFile):
         self.ipdb = open(ipdbFile, "rb")
         str = self.ipdb.read(8)
         (self.firstIndex, self.lastIndex) = struct.unpack('II', str)
-        self.indexCount = (self.lastIndex - self.firstIndex) / 7 + 1
+        self.indexCount = (self.lastIndex - self.firstIndex)/7+1
         # print self.getVersion(), u" 纪录总数: %d 条 "%(self.indexCount)
 
     def getVersion(self):
@@ -24,7 +25,7 @@ class IPAddresss:
         if offset:
             self.ipdb.seek(offset)
         str = self.ipdb.read(1)
-        (byte, ) = struct.unpack('B', str)
+        (byte,) = struct.unpack('B', str)
         if byte == 0x01 or byte == 0x02:
             p = self.getLong3()
             if p:
@@ -40,12 +41,12 @@ class IPAddresss:
         countryAddr = ""
         areaAddr = ""
         str = self.ipdb.read(1)
-        (byte, ) = struct.unpack('B', str)
+        (byte,) = struct.unpack('B', str)
         if byte == 0x01:
             countryOffset = self.getLong3()
             self.ipdb.seek(countryOffset)
             str = self.ipdb.read(1)
-            (b, ) = struct.unpack('B', str)
+            (b,) = struct.unpack('B', str)
             if b == 0x02:
                 countryAddr = self.getString(self.getLong3())
                 self.ipdb.seek(countryOffset + 4)
@@ -60,8 +61,8 @@ class IPAddresss:
             areaAddr = self.getAreaAddr()
         return countryAddr + " " + areaAddr
 
-    def dump(self, first, last):
-        if last > self.indexCount:
+    def dump(self, first , last):
+        if last > self.indexCount :
             last = self.indexCount
         for index in range(first, last):
             offset = self.firstIndex + index * 7
@@ -81,12 +82,12 @@ class IPAddresss:
         self.curEndIpOffset = of1 + (of2 << 16)
         self.ipdb.seek(self.curEndIpOffset)
         buf = self.ipdb.read(4)
-        (self.curEndIp, ) = struct.unpack("I", buf)
+        (self.curEndIp,) = struct.unpack("I", buf)
 
     def getIpAddr(self, ip):
         L = 0
         R = self.indexCount - 1
-        while L < R - 1:
+        while L < R-1:
             M = (L + R) / 2
             self.setIpRange(M)
             if ip == self.curStartIp:
@@ -114,26 +115,24 @@ class IPAddresss:
             + self.ip2str(self.curEndIp)
         return range
 
-    def getString(self, offset=0):
-        if offset:
+    def getString(self, offset = 0):
+        if offset :
             self.ipdb.seek(offset)
         str = ""
         ch = self.ipdb.read(1)
-        (byte, ) = struct.unpack('B', ch)
+        (byte,) = struct.unpack('B', ch)
         while byte != 0:
             str += ch
             ch = self.ipdb.read(1)
-            (byte, ) = struct.unpack('B', ch)
+            (byte,) = struct.unpack('B', ch)
         return str
 
     def ip2str(self, ip):
-        return str(ip >> 24) + '.' + str((ip >> 16) & 0xffL) + '.' + str((
-            ip >> 8) & 0xffL) + '.' + str(ip & 0xffL)
+        return str(ip >> 24)+'.'+str((ip >> 16) & 0xffL)+'.'+str((ip >> 8) & 0xffL)+'.'+str(ip & 0xffL)
 
     def str2ip(self, s):
-        (ip, ) = struct.unpack('I', socket.inet_aton(s))
-        return ((ip >> 24) & 0xffL) | ((ip & 0xffL) << 24) | (
-            (ip >> 8) & 0xff00L) | ((ip & 0xff00L) << 8)
+        (ip,) = struct.unpack('I', socket.inet_aton(s))
+        return ((ip >> 24) & 0xffL) | ((ip & 0xffL) << 24) | ((ip >> 8) & 0xff00L) | ((ip & 0xff00L) << 8)
 
     def getLong3(self, offset=0):
         if offset:
@@ -141,3 +140,6 @@ class IPAddresss:
         str = self.ipdb.read(3)
         (a, b) = struct.unpack('HB', str)
         return (b << 16) + a
+
+
+
