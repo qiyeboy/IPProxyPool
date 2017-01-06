@@ -1,5 +1,7 @@
-requests
-chardet
-web.py
-sqlalchemy
-
+chardet==2.3.0
+gevent==1.2.0
+greenlet==0.4.11
+lxml==3.7.1
+requests==2.12.4
+SQLAlchemy==1.1.4
+web.py==0.38
