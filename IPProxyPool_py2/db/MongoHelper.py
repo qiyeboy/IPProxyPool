@@ -19,10 +19,10 @@ class MongoHelper(ISqlHelper):
 
 
     def insert(self,value=None):
-      if value:
-          proxy = dict(ip=value['ip'],port=value['port'],types=value['types'],protocol=value['protocol'],country = value['country'],
-                       area=value['area'],speed=value['speed'],score=0)
-          self.proxys.insert(proxy)
+        if value:
+            proxy = dict(ip=value['ip'],port=value['port'],types=value['types'],protocol=value['protocol'],country = value['country'],
+                         area=value['area'],speed=value['speed'],score=0)
+            self.proxys.insert(proxy)
 
 
 
