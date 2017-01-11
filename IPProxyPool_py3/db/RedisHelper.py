@@ -1,11 +1,11 @@
-#coding:utf-8
+# coding:utf-8
 from db.ISqlHelper import ISqlHelper
 
 
 class RedisHelper(ISqlHelper):
-
     def __init__(self):
         pass
+
     def init_db(self):
         pass
 
@@ -14,17 +14,17 @@ class RedisHelper(ISqlHelper):
         pass
 
 
-    def insert(self,value):
+    def insert(self, value):
         pass
 
 
     def delete(self, conditions):
         pass
 
-    def update(self, conditions,value):
+    def update(self, conditions, value):
         pass
 
-    def select(self, count=None,conditions=[]):
+    def select(self, count=None, conditions=[]):
         pass
 
 

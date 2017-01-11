@@ -1,14 +1,10 @@
 ﻿# IPProxyPool
 IPProxyPool代理池项目，提供代理ip。支持py2和py3两个版本。
 <br/>
-由于验证ip匿名性的网站挂掉了，因此现在抓取的ip无法判断是否匿名，特此说明。
-<br/>
-如果大家有验证ip匿名性的网站，请及时通知我。
-<br/>
 详细使用方式，请看我的博客:
 http://www.cnblogs.com/qiyeboy/p/5693128.html
 <br/>
-最近几周我会比较忙，会陆续添加更多功能，敬请期待。大家可以关注我的公众号，更新我会及时通知。
+最近正在为IPProxyPool添加二级代理，方便调度。大家可以关注我的公众号，更新我会及时通知。
 <br/>
 ####我的微信公众号:
 <br/>
@@ -137,10 +133,10 @@ GET /
 
 | Name | Type | Description |
 | ----| ---- | ---- |
-| types | int | 0: 高匿代理, 1 透明 |
-| protocol | int | 0: http, 1 https |
+| types | int | 0: 高匿,1:匿名,2 透明 |
+| protocol | int | 0: http, 1 https, 2 http/https |
 | count | int | 数量 |
-| country | str | 国家 |
+| country | str | 取值为 国内, 国外 |
 | area | str | 地区 |
 
 
@@ -148,7 +144,7 @@ GET /
 #### 例子
 #####IPProxys默认端口为8000，端口可以在config.py中配置。
 #####如果是在本机上测试：
-1.获取5个ip地址在中国的高匿代理：http://127.0.0.1:8000/?types=0&count=5&country=中国
+1.获取5个ip地址在中国的高匿代理：http://127.0.0.1:8000/?types=0&count=5&country=国内
 <br/>
 2.响应为JSON格式，按照评分由高到低，响应速度由高到低的顺序，返回数据：
 <br/>
@@ -160,7 +156,7 @@ GET /
 ```
 import requests
 import json
-r = requests.get('http://127.0.0.1:8000/?types=0&count=5&country=中国')
+r = requests.get('http://127.0.0.1:8000/?types=0&count=5&country=国内')
 ip_ports = json.loads(r.text)
 print ip_ports
 ip = ip_ports[0][0]
@@ -185,10 +181,10 @@ GET /delete
 | ----| ---- | ---- |
 | ip | str | 类似192.168.1.1 |
 | port | int | 类似 80 |
-| types | int | 0: 高匿代理, 1 透明 |
-| protocol | int | 0: http, 1 https |
+| types | int |  0: 高匿,1:匿名,2 透明 |
+| protocol | int | 0: http, 1 https, 2 http/https |
 | count | int | 数量 |
-| country | str | 国家 |
+| country | str | 取值为 国内, 国外 |
 | area | str | 地区 |
 大家可以根据指定以上一种或几种方式删除数据。
 #### 例子
@@ -210,6 +206,15 @@ print r.text
 
 
 ## 更新进度
+-----------------------------2017-1-11----------------------------
+1.使用httpbin.org检测代理ip的高匿性
+<br/>
+2.使用 国内 和 国外 作为country的查询条件
+<br/>
+3.修改types和protocol参数，一定要注意protocol的使用，试试访问http://www.baidu.com和https://www.baidu.com
+<br/>
+4.美化代码风格
+<br/>
 -----------------------------2016-12-11----------------------------
 ####大规模重构，主要包括以下几个方面：
 1.使用多进程+协程的方式，将爬取和验证的效率提高了50倍以上，可以在几分钟之内获取所有的有效IP

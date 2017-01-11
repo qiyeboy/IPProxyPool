@@ -1,4 +1,2 @@
-
-
 __author__ = 'Xaxdus'
 

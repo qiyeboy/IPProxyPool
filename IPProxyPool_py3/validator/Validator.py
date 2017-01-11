@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 import json
 from multiprocessing import Process
 import re
@@ -12,139 +12,145 @@ import config
 from db.DataStore import sqlhelper
 from util.exception import Test_URL_Fail
 
-
-
 from gevent import monkey
+
 monkey.patch_all()
 
 
-def detect_from_db(myip,proxy,proxies_set):
-    proxy_dict = {'ip':proxy[0],'port':proxy[1]}
-    result = detect_list(myip,proxy_dict)
+def detect_from_db(myip, proxy, proxies_set):
+    proxy_dict = {'ip': proxy[0], 'port': proxy[1]}
+    result = detect_proxy(myip, proxy_dict)
     if result:
-        if proxy[2]<60000:
+        if proxy[2] < 60000:
             score = proxy[2] + 1
         else:
             score = 60000
-        proxy_str ='%s:%s'%(proxy[0],proxy[1])
+        proxy_str = '%s:%s' % (proxy[0], proxy[1])
         proxies_set.add(proxy_str)
-        sqlhelper.update({'ip':proxy[0],'port':proxy[1]},{'score':score})
+        sqlhelper.update({'ip': proxy[0], 'port': proxy[1]}, {'score': score})
     else:
-        sqlhelper.delete({'ip':proxy[0],'port':proxy[1]})
-
+        sqlhelper.delete({'ip': proxy[0], 'port': proxy[1]})
 
     pass
 
 
-def validator(queue1,queue2):
-    tasklist=[]
-    myip = getMyIP()
+def validator(queue1, queue2, myip):
+    tasklist = []
     while True:
         try:
             # proxy_dict = {'source':'crawl','data':proxy}
             proxy = queue1.get(timeout=10)
             tasklist.append(proxy)
-            if len(tasklist)>500:
-                p = Process(target=process_start,args=(tasklist,myip,queue2))
+            if len(tasklist) > 500:
+                p = Process(target=process_start, args=(tasklist, myip, queue2))
                 p.start()
-                tasklist=[]
+                tasklist = []
         except Exception as e:
-            if len(tasklist)>0:
-                p = Process(target=process_start,args=(tasklist,myip,queue2))
+            if len(tasklist) > 0:
+                p = Process(target=process_start, args=(tasklist, myip, queue2))
                 p.start()
-                tasklist=[]
+                tasklist = []
 
 
-def process_start(tasks,myip,queue2):
+def process_start(tasks, myip, queue2):
     spawns = []
     for task in tasks:
-        spawns.append(gevent.spawn(detect_list,myip,task,queue2))
+        spawns.append(gevent.spawn(detect_proxy, myip, task, queue2))
     gevent.joinall(spawns)
 
 
-def detect_list(selfip,proxy,queue2=None):
+def detect_proxy(selfip, proxy, queue2=None):
     '''
     :param proxy: ip字典
     :return:
     '''
     ip = proxy['ip']
     port = proxy['port']
-    proxies={"http": "http://%s:%s"%(ip,port),"https": "http://%s:%s"%(ip,port)}
-    # proxyType = checkProxyType(selfip,proxies)
-    # if proxyType==3:
-    #     logger.info('failed %s:%s'%(ip,port))
-    #     proxy = None
-    #     queue2.put(proxy)
-    #     return proxy
-    # else:
-    #     proxy['type']=proxyType
-    proxy['type']=0
-    start = time.time()
-    try:
-        r = requests.get(url=TEST_URL,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
-
-        if not r.ok or r.text.find(ip)==-1:
-            proxy = None
-        else:
-            speed = round(time.time()-start,2)
-            proxy['speed']=speed
-    except Exception as e:
-            proxy = None
-
+    proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
+    protocol, types, speed = checkProxy(selfip, proxies)
+    if protocol > 0:
+        proxy['protocol'] = protocol
+        proxy['type'] = types
+        proxy['speed'] = speed
+    else:
+        proxy = None
     if queue2:
         queue2.put(proxy)
     return proxy
 
-def checkProxyType(selfip,proxies):
+
+def checkProxy(selfip, proxies):
     '''
     用来检测代理的类型，突然发现，免费网站写的信息不靠谱，还是要自己检测代理的类型
-    :param proxies: 代理(0 高匿，1 匿名，2 透明 3 无效代理
+    :param
     :return:
     '''
+    protocol = -1
+    types = -1
+    speed = -1
+    http, http_types, http_speed = _checkHttpProxy(selfip, proxies)
+    https, https_types, https_speed = _checkHttpProxy(selfip, proxies, False)
+    if http and https:
+        protocol = 2
+        types = http_types
+        speed = http_speed
+    elif http:
+        types = http_types
+        protocol = 0
+        speed = http_speed
+    elif https:
+        types = https_types
+        protocol = 1
+        speed = https_speed
+    else:
+        types = -1
+        protocol = -1
+        speed = -1
+    return protocol, types, speed
 
+
+def _checkHttpProxy(selfip, proxies, isHttp=True):
+    types = -1
+    speed = -1
+    if isHttp:
+        test_url = config.TEST_HTTP_HEADER
+    else:
+        test_url = config.TEST_HTTPS_HEADER
     try:
-
-        r = requests.get(url=config.TEST_PROXY,headers=config.HEADER,timeout=config.TIMEOUT,proxies=proxies)
+        start = time.time()
+        r = requests.get(url=test_url, headers=config.HEADER, timeout=config.TIMEOUT, proxies=proxies)
         if r.ok:
-            root = etree.HTML(r.text)
-            ip = root.xpath('.//center[2]/table/tr[3]/td[2]')[0].text
-            http_x_forwared_for = root.xpath('.//center[2]/table/tr[8]/td[2]')[0].text
-            http_via = root.xpath('.//center[2]/table/tr[9]/td[2]')[0].text
-            # print ip,http_x_forwared_for,http_via,type(http_via),type(http_x_forwared_for)
-            if ip==selfip:
-                return 3
-            if http_x_forwared_for is None and http_via is None:
-                return 0
-            if http_via != None and http_x_forwared_for.find(selfip)== -1:
-                return 1
-
-            if http_via != None and http_x_forwared_for.find(selfip)!= -1:
-                return 2
-        return 3
-
-
-
+            speed = round(time.time() - start, 2)
+            content = json.loads(r.text)
+            headers = content['headers']
+            ip = content['origin']
+            x_forwarded_for = headers.get('X-Forwarded-For', None)
+            x_real_ip = headers.get('X-Real-Ip', None)
+            if selfip in ip:
+                return False, types, speed
+            elif x_forwarded_for is None and x_real_ip is None:
+                types = 0
+            elif selfip not in x_forwarded_for and selfip not in x_real_ip:
+                types = 1
+            else:
+                types = 2
+            return True, types, speed
+        else:
+            return False, types, speed
     except Exception as e:
-        return 3
-
-
+        return False, types, speed
 
 
 def getMyIP():
     try:
-        r = requests.get(url=config.TEST_URL,headers=config.HEADER,timeout=config.TIMEOUT)
-        pattern = '\d+\.\d+\.\d+\.\d+'
-        match =re.search(pattern,r.text)
-        if match:
-            ip = match.group()
-            return ip
-        else:
-
-            raise Test_URL_Fail
+        r = requests.get(url=config.TEST_IP, headers=config.HEADER, timeout=config.TIMEOUT)
+        ip = json.loads(r.text)
+        return ip['origin']
     except Exception as e:
-            raise Test_URL_Fail
+        raise Test_URL_Fail
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     getMyIP()
     # str="{ip:'61.150.43.121',address:'陕西省西安市 西安电子科技大学'}"
     # j = json.dumps(str)

@@ -10,12 +10,13 @@ import logging
 
 logger = logging.getLogger('util')
 
+
 class IPAddresss:
     def __init__(self, ipdbFile):
         self.ipdb = open(ipdbFile, "rb")
         str = self.ipdb.read(8)
         (self.firstIndex, self.lastIndex) = struct.unpack('II', str)
-        self.indexCount = int((self.lastIndex - self.firstIndex)/7+1)
+        self.indexCount = int((self.lastIndex - self.firstIndex) / 7 + 1)
         # print self.getVersion(), u" 纪录总数: %d 条 "%(self.indexCount)
 
     def getVersion(self):
@@ -62,8 +63,8 @@ class IPAddresss:
             areaAddr = self.getAreaAddr()
         return countryAddr + " " + areaAddr
 
-    def dump(self, first , last):
-        if last > self.indexCount :
+    def dump(self, first, last):
+        if last > self.indexCount:
             last = self.indexCount
         for index in range(first, last):
             offset = self.firstIndex + index * 7
@@ -88,7 +89,7 @@ class IPAddresss:
     def getIpAddr(self, ip):
         L = 0
         R = self.indexCount - 1
-        while L < R-1:
+        while L < R - 1:
             M = int((L + R) / 2)
             self.setIpRange(M)
             if ip == self.curStartIp:
@@ -113,11 +114,11 @@ class IPAddresss:
     def getIpRange(self, ip):
         self.getIpAddr(ip)
         range = self.ip2str(self.curStartIp) + ' - ' \
-            + self.ip2str(self.curEndIp)
+                + self.ip2str(self.curEndIp)
         return range
 
-    def getString(self, offset = 0):
-        if offset :
+    def getString(self, offset=0):
+        if offset:
             self.ipdb.seek(offset)
         str = b''
         ch = self.ipdb.read(1)
@@ -129,7 +130,7 @@ class IPAddresss:
         return str.decode('gbk')
 
     def ip2str(self, ip):
-        return str(ip >> 24)+'.'+str((ip >> 16) & 0xff)+'.'+str((ip >> 8) & 0xff)+'.'+str(ip & 0xff)
+        return str(ip >> 24) + '.' + str((ip >> 16) & 0xff) + '.' + str((ip >> 8) & 0xff) + '.' + str(ip & 0xff)
 
     def str2ip(self, s):
         (ip,) = struct.unpack('I', socket.inet_aton(s))
@@ -142,7 +143,8 @@ class IPAddresss:
         (a, b) = struct.unpack('HB', str)
         return (b << 16) + a
 
-QQWRY_PATH=os.path.dirname(__file__)+"/../data/qqwry.dat"
+
+QQWRY_PATH = os.path.dirname(__file__) + "/../data/qqwry.dat"
 ips = IPAddresss(QQWRY_PATH)
 addr = ips.getIpAddr(ips.str2ip('183.61.236.53'))
 print(addr)

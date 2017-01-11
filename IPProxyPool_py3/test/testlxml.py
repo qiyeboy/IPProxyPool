@@ -1,9 +1,9 @@
-#coding:utf-8
+# coding:utf-8
 from lxml import etree
 
 __author__ = 'Xaxdus'
 
-html='''
+html = '''
 
 <!doctype html public "-//w3c//dtd xhtml 1.0 transitional//en" "http://www.w3.org/tr/xhtml1/dtd/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -168,4 +168,5 @@ root = etree.HTML(html)
 proxys = root.xpath(".//*[@id='footer']/div/table/tr[position()>1]")
 
 for proxy in proxys:
-    print proxy.xpath('./td[1]')[0].text
+    print
+    proxy.xpath('./td[1]')[0].text
