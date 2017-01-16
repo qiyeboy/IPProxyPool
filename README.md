@@ -104,7 +104,6 @@ $ git clone
 
 ```
 $ cd IPProxyPool
-$ cd IPProxyPool_py2 或者 cd IPProxyPool_py3
 ```
 
 运行脚本
