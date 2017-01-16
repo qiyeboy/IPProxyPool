@@ -124,7 +124,7 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
             ip = content[u'origin']
             x_forwarded_for = headers.get(u'X-Forwarded-For', None)
             x_real_ip = headers.get(u'X-Real-Ip', None)
-            if selfip in ip:
+            if selfip in ip or ',' in ip:
                 return False, types, speed
             elif x_forwarded_for is None and x_real_ip is None:
                 types = 0
@@ -150,7 +150,11 @@ def getMyIP():
 
 
 if __name__ == '__main__':
-    pass
+    myip = getMyIP()
+    ip,port = "61.152.81.193",9100
+    proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
+    protocol, types, speed = checkProxy(myip, proxies)
+
     # ip = '124.88.67.81'
     # port = '80'
     # proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
