@@ -124,7 +124,7 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
             ip = content[u'origin']
             x_forwarded_for = headers.get(u'X-Forwarded-For', None)
             x_real_ip = headers.get(u'X-Real-Ip', None)
-            if selfip in ip or ',' in ip:
+            if selfip in ip :
                 return False, types, speed
             elif x_forwarded_for is None and x_real_ip is None:
                 types = 0
