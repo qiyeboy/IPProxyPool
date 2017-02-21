@@ -4,7 +4,7 @@ import config
 
 class Test_URL_Fail(Exception):
     def __str__(self):
-        str = "访问%s失败，请检查网络连接" % config.TEST_URL
+        str = "访问%s失败，请检查网络连接" % config.TEST_IP
         return str
 
 
