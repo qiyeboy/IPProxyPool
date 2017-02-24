@@ -115,7 +115,7 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
         test_url = config.TEST_HTTPS_HEADER
     try:
         start = time.time()
-        r = requests.get(url=test_url, headers=config.HEADER, timeout=config.TIMEOUT, proxies=proxies)
+        r = requests.get(url=test_url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=proxies)
         if r.ok:
             speed = round(time.time() - start, 2)
             content = json.loads(r.text)
@@ -140,7 +140,7 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
 
 def getMyIP():
     try:
-        r = requests.get(url=config.TEST_IP, headers=config.HEADER, timeout=config.TIMEOUT)
+        r = requests.get(url=config.TEST_IP, headers=config.get_header(), timeout=config.TIMEOUT)
         ip = json.loads(r.text)
         return ip['origin']
     except Exception as e:

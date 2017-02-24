@@ -15,7 +15,7 @@ class Html_Downloader(object):
     @staticmethod
     def download(url):
         try:
-            r = requests.get(url=url, headers=config.HEADER, timeout=config.TIMEOUT)
+            r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT)
             r.encoding = chardet.detect(r.content)['encoding']
             if (not r.ok) or len(r.content) < 500:
                 raise ConnectionError
@@ -35,7 +35,7 @@ class Html_Downloader(object):
                     port = proxy[1]
                     proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
 
-                    r = requests.get(url=url, headers=config.HEADER, timeout=config.TIMEOUT, proxies=proxies)
+                    r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=proxies)
                     r.encoding = chardet.detect(r.content)['encoding']
                     if (not r.ok) or len(r.content) < 500:
                         raise ConnectionError
