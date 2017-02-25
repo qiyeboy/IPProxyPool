@@ -1,6 +1,7 @@
 # coding:utf-8
 import json
-from multiprocessing import Process
+import os
+from multiprocessing import Process, Queue
 import gevent
 
 import requests
@@ -33,27 +34,39 @@ def detect_from_db(myip, proxy, proxies_set):
 
 def validator(queue1, queue2, myip):
     tasklist = []
+    proc_pool = {}     # 所有进程列表
+    cntl_q = Queue()   # 控制信息队列
     while True:
         try:
             # proxy_dict = {'source':'crawl','data':proxy}
             proxy = queue1.get(timeout=10)
             tasklist.append(proxy)
             if len(tasklist) > 500:
-                p = Process(target=process_start, args=(tasklist, myip, queue2))
+                p = Process(target=process_start, args=(tasklist, myip, queue2, cntl_q))
                 p.start()
+                proc_pool[p.pid] = p
                 tasklist = []
+
         except Exception as e:
             if len(tasklist) > 0:
-                p = Process(target=process_start, args=(tasklist, myip, queue2))
+                p = Process(target=process_start, args=(tasklist, myip, queue2, cntl_q))
                 p.start()
+                proc_pool[p.pid] = p
                 tasklist = []
 
+        if not cntl_q.empty():
+            # 处理已结束的进程
+            pid = cntl_q.get()
+            proc = proc_pool.pop(pid)
+            proc.join()
 
-def process_start(tasks, myip, queue2):
+
+def process_start(tasks, myip, queue2, cntl):
     spawns = []
     for task in tasks:
         spawns.append(gevent.spawn(detect_proxy, myip, task, queue2))
     gevent.joinall(spawns)
+    cntl.put(os.getpid())  # 子进程退出是加入控制队列
 
 
 def detect_proxy(selfip, proxy, queue2=None):
@@ -115,7 +128,7 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
         test_url = config.TEST_HTTPS_HEADER
     try:
         start = time.time()
-        r = requests.get(url=test_url, headers=config.HEADER, timeout=config.TIMEOUT, proxies=proxies)
+        r = requests.get(url=test_url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=proxies)
         if r.ok:
             speed = round(time.time() - start, 2)
             content = json.loads(r.text)
@@ -140,7 +153,7 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
 
 def getMyIP():
     try:
-        r = requests.get(url=config.TEST_IP, headers=config.HEADER, timeout=config.TIMEOUT)
+        r = requests.get(url=config.TEST_IP, headers=config.get_header(), timeout=config.TIMEOUT)
         ip = json.loads(r.text)
         return ip['origin']
     except Exception as e:
