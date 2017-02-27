@@ -1,18 +1,19 @@
 # coding:utf-8
+from gevent import monkey
+monkey.patch_all(thread=False)
+# monkey.patch_all()
+
 import json
 import os
-from multiprocessing import Process, Queue
 import gevent
-
 import requests
 import time
+
+from multiprocessing import Process, Queue
+
 import config
 from db.DataStore import sqlhelper
 from util.exception import Test_URL_Fail
-
-from gevent import monkey
-
-monkey.patch_all()
 
 
 def detect_from_db(myip, proxy, proxies_set):
@@ -78,7 +79,7 @@ def detect_proxy(selfip, proxy, queue2=None):
     port = proxy['port']
     proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
     protocol, types, speed = checkProxy(selfip, proxies)
-    if protocol > 0:
+    if protocol >= 0:
         proxy['protocol'] = protocol
         proxy['type'] = types
         proxy['speed'] = speed
