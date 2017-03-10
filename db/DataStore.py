@@ -7,6 +7,8 @@ from util.exception import Con_DB_Fail
 try:
     if DB_CONFIG['DB_CONNECT_TYPE'] == 'pymongo':
         from db.MongoHelper import MongoHelper as SqlHelper
+    elif DB_CONFIG['DB_CONNECT_TYPE'] == 'redis':
+        from db.RedisHelper import RedisHelper as SqlHelper
     else:
         from db.SqlHelper import SqlHelper as SqlHelper
     sqlhelper = SqlHelper()
