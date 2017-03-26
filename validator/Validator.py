@@ -7,7 +7,7 @@ import os
 import gevent
 import requests
 import time
-
+import psutil
 from multiprocessing import Process, Queue
 
 import config
