@@ -7,7 +7,7 @@ import os
 import gevent
 import requests
 import time
-
+import psutil
 from multiprocessing import Process, Queue
 
 import config
@@ -58,7 +58,13 @@ def validator(queue1, queue2, myip):
             # 处理已结束的进程
             pid = cntl_q.get()
             proc = proc_pool.pop(pid)
-            proc.join()
+            proc_ps = psutil.Process(pid)
+            proc_ps.kill()
+            try:
+                proc_ps.wait()
+            except Exception as e:
+                print(e)
+                print(" we are unable to kill pid:%s" % (pid))
 
 
 def process_start(tasks, myip, queue2, cntl):
