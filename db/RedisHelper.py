@@ -47,7 +47,7 @@ class RedisHelper(ISqlHelper):
     def insert(self, value):
         proxy = Proxy(ip=value['ip'], port=value['port'], types=value['types'], protocol=value['protocol'],
                       country=value['country'], area=value['area'],
-                      speed=value['speed'], score=value.get('score', 0))
+                      speed=value['speed'], score=value.get('score', config.DEFAULT_SCORE))
         mapping = proxy.__dict__
         for k in list(mapping.keys()):
             if k.startswith('_'):

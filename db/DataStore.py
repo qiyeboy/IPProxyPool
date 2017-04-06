@@ -38,7 +38,6 @@ def store_data(queue2, db_proxy_num):
             sys.stdout.write(str + "\r")
             sys.stdout.flush()
         except BaseException as e:
-
             if db_proxy_num.value != 0:
                 successNum += db_proxy_num.value
                 db_proxy_num.value = 0

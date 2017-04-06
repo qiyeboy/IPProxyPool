@@ -1,5 +1,5 @@
 import pymongo
-from config import DB_CONFIG
+from config import DB_CONFIG, DEFAULT_SCORE
 
 from db.ISqlHelper import ISqlHelper
 
@@ -19,7 +19,7 @@ class MongoHelper(ISqlHelper):
         if value:
             proxy = dict(ip=value['ip'], port=value['port'], types=value['types'], protocol=value['protocol'],
                          country=value['country'],
-                         area=value['area'], speed=value['speed'], score=0)
+                         area=value['area'], speed=value['speed'], score=DEFAULT_SCORE)
             self.proxys.insert(proxy)
 
     def delete(self, conditions=None):

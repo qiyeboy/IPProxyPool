@@ -55,7 +55,7 @@ class ProxyCrawl(object):
                 sys.stdout.flush()
                 self.crawl_pool.map(self.crawl, parserList)
             else:
-                str += '\r\nIPProxyPool----->>>>>>>>now ip num meet the requirement，wait UPDATE_TIME...'
+                str += '\r\nIPProxyPool----->>>>>>>>now ip num meet the requirement,wait UPDATE_TIME...'
                 sys.stdout.write(str + "\r\n")
                 sys.stdout.flush()
 

@@ -33,7 +33,7 @@ def checkProxyType(selfip, proxies):
         # return 3
 
 
-    except Exception, e:
+    except Exception as e:
         print
         str(e)
         return 3

@@ -1,4 +1,7 @@
 # coding:utf-8
+import sys
+
+import chardet
 from gevent import monkey
 monkey.patch_all()
 
@@ -19,17 +22,18 @@ def detect_from_db(myip, proxy, proxies_set):
     proxy_dict = {'ip': proxy[0], 'port': proxy[1]}
     result = detect_proxy(myip, proxy_dict)
     if result:
-        if proxy[2] < 60000:
-            score = proxy[2] + 1
-        else:
-            score = 60000
         proxy_str = '%s:%s' % (proxy[0], proxy[1])
         proxies_set.add(proxy_str)
-        sqlhelper.update({'ip': proxy[0], 'port': proxy[1]}, {'score': score})
-    else:
-        sqlhelper.delete({'ip': proxy[0], 'port': proxy[1]})
 
-    pass
+    else:
+        if proxy[2] < 1:
+            sqlhelper.delete({'ip': proxy[0], 'port': proxy[1]})
+        else:
+            score = proxy[2]-1
+            sqlhelper.update({'ip': proxy[0], 'port': proxy[1]}, {'score': score})
+            proxy_str = '%s:%s' % (proxy[0], proxy[1])
+            proxies_set.add(proxy_str)
+
 
 
 def validator(queue1, queue2, myip):
@@ -77,7 +81,7 @@ def detect_proxy(selfip, proxy, queue2=None):
     ip = proxy['ip']
     port = proxy['port']
     proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
-    protocol, types, speed = checkProxy(selfip, proxies)
+    protocol, types, speed = getattr(sys.modules[__name__],config.CHECK_PROXY['function'])(selfip, proxies)#checkProxy(selfip, proxies)
     if protocol >= 0:
         proxy['protocol'] = protocol
         proxy['type'] = types
@@ -150,6 +154,48 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
     except Exception as e:
         return False, types, speed
 
+
+def baidu_check(selfip, proxies):
+    '''
+    用来检测代理的类型，突然发现，免费网站写的信息不靠谱，还是要自己检测代理的类型
+    :param
+    :return:
+    '''
+    protocol = -1
+    types = -1
+    speed = -1
+    # try:
+    #     #http://ip.chinaz.com/getip.aspx挺稳定，可以用来检测ip
+    #     r = requests.get(url=config.TEST_URL, headers=config.get_header(), timeout=config.TIMEOUT,
+    #                      proxies=proxies)
+    #     r.encoding = chardet.detect(r.content)['encoding']
+    #     if r.ok:
+    #         if r.text.find(selfip)>0:
+    #             return protocol, types, speed
+    #     else:
+    #         return protocol,types,speed
+    #
+    #
+    # except Exception as e:
+    #     return protocol, types, speed
+    try:
+        start = time.time()
+        r = requests.get(url='https://www.baidu.com', headers=config.get_header(), timeout=config.TIMEOUT, proxies=proxies)
+        r.encoding = chardet.detect(r.content)['encoding']
+        if r.ok:
+            speed = round(time.time() - start, 2)
+            protocol= 0
+            types=0
+
+        else:
+            speed = -1
+            protocol= -1
+            types=-1
+    except Exception as e:
+            speed = -1
+            protocol = -1
+            types = -1
+    return protocol, types, speed
 
 def getMyIP():
     try:
