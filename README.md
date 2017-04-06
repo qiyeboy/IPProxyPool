@@ -6,17 +6,20 @@ http://www.cnblogs.com/qiyeboy/p/5693128.html
 <br/>
 最近正在为IPProxyPool添加二级代理，方便调度。大家可以关注我的公众号，更新我会及时通知。
 <br/>
+
 ####我的微信公众号:
-<br/>
+
 ![](qiye2.jpg)
 <br/>
 希望大家提供更多的代理网站，现在爬取的好用的代理ip还是太少。
 <br/>
 同时感谢[super1-chen](https://github.com/super1-chen),[fancoo](https://github.com/fancoo),[Leibnizhu](https://github.com/Leibnizhu)对项目的贡献。
 <br/>
+
 ##项目依赖
+
 ####Ubuntu,debian
-<br/>
+
 1.安装sqlite数据库(一般系统内置):
 apt-get install sqlite3
 <br/>
@@ -33,6 +36,7 @@ apt-get install python-lxml
 * 在python3中安装web.py，不能使用pip，直接下载py3版本的[源码](https://codeload.github.com/webpy/webpy/zip/py3)进行安装
 
 ####Windows
+
 1.下载[sqlite](http://www.sqlite.org/download.html),路径添加到环境变量
 <br/>
 2.安装requests,chardet,web.py,gevent:
@@ -48,6 +52,7 @@ pip install lxml或者下载[lxml windows版](https://pypi.python.org/pypi/lxml/
 * 在python3中安装web.py，不能使用pip，直接下载py3版本的[源码](https://codeload.github.com/webpy/webpy/zip/py3)进行安装
 
 ####扩展说明
+
 本项目默认数据库是sqlite，但是采用sqlalchemy的ORM模型，通过预留接口可以拓展使用MySQL，MongoDB等数据库。
 配置方法：
 <br/>
@@ -79,7 +84,9 @@ sqlalchemy下的DB_CONNECT_STRING参考[支持数据库](http://docs.sqlalchemy.
         }
 ```
 由于sqlalchemy并不支持MongoDB,因此额外添加了pymongo模式，DB_CONNECT_STRING参考pymongo的连接字符串。
+
 #####注意
+
 如果大家想拓展其他数据库，可以直接继承db下ISqlHelper类，实现其中的方法，具体实现参考我的代码，然后在DataStore中导入类即可。
 ```
 try:
@@ -93,6 +100,7 @@ except Exception,e:
     raise Con_DB_Fail
 ```
 有感兴趣的朋友，可以将Redis的实现方式添加进来。
+
 
 ## 如何使用
 
@@ -127,8 +135,8 @@ IPProxyPool----->>>>>>>>Success ip num :134,Fail ip num:7882
 GET /
 ```
 这种模式用于查询代理ip数据，同时加入评分机制，返回数据的顺序是按照评分由高到低，速度由快到慢制定的。
-####参数 
 
+####参数 
 
 | Name | Type | Description |
 | ----| ---- | ---- |
@@ -141,9 +149,11 @@ GET /
 
 
 #### 例子
+
 #####IPProxys默认端口为8000,端口可以在config.py中配置。
 
 #####如果是在本机上测试：
+
 1.获取5个ip地址在中国的高匿代理：http://127.0.0.1:8000/?types=0&count=5&country=国内
 <br/>
 2.响应为JSON格式，按照评分由高到低，响应速度由高到低的顺序，返回数据：
@@ -178,7 +188,6 @@ GET /delete
 
 ####参数 
 
-
 | Name | Type | Description |
 | ----| ---- | ---- |
 | ip | str | 类似192.168.1.1 |
@@ -190,12 +199,14 @@ GET /delete
 | area | str | 地区 |
 
 大家可以根据指定以上一种或几种方式删除数据。
+
 #### 例子
+
 #####如果是在本机上测试：
+
 1.删除ip为120.92.3.127的代理：http://127.0.0.1:8000/delete?ip=120.92.3.127
 <br/>
 2.响应为JSON格式，返回删除的结果为成功,失败或者返回删除的个数,类似如下的效果：
-
 ["deleteNum", "ok"]或者["deleteNum", 1]
 ```
 import requests
