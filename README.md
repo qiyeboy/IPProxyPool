@@ -20,8 +20,8 @@ http://www.cnblogs.com/qiyeboy/p/5693128.html
 1.安装sqlite数据库(一般系统内置):
 apt-get install sqlite3
 <br/>
-2.安装requests,chardet,web.py,gevent:
-pip install requests chardet web.py sqlalchemy gevent
+2.安装requests,chardet,web.py,gevent psutil:
+pip install requests chardet web.py sqlalchemy gevent psutil
 <br/>
 3.安装lxml:
 apt-get install python-lxml
@@ -141,7 +141,8 @@ GET /
 
 
 #### 例子
-#####IPProxys默认端口为8000，端口可以在config.py中配置。
+#####IPProxys默认端口为8000,端口可以在config.py中配置。
+
 #####如果是在本机上测试：
 1.获取5个ip地址在中国的高匿代理：http://127.0.0.1:8000/?types=0&count=5&country=国内
 <br/>
@@ -174,6 +175,7 @@ print r.text
 GET /delete
 ```
 这种模式用于方便用户根据自己的需求删除代理ip数据
+
 ####参数 
 
 
@@ -186,6 +188,7 @@ GET /delete
 | count | int | 数量 |
 | country | str | 取值为 国内, 国外 |
 | area | str | 地区 |
+
 大家可以根据指定以上一种或几种方式删除数据。
 #### 例子
 #####如果是在本机上测试：
