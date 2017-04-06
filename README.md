@@ -152,6 +152,7 @@ GET /
 ```
 <br/>
 以["122.226.189.55", 138, 10]为例，第一个元素是ip,第二个元素是port，第三个元素是分值score。
+
 ```
 import requests
 import json
@@ -198,14 +199,112 @@ import requests
 r = requests.get('http://127.0.0.1:8000/delete?ip=120.92.3.127')
 print r.text
 ```
+## config.py参数配置
+```
+#parserList是网址解析规则表,大家可以将发现的代理网址,将提取规则添加到其中,方便爬虫的爬取。
+parserList = [
+    {
+        'urls': ['http://www.66ip.cn/%s.html' % n for n in ['index'] + list(range(2, 12))],
+        'type': 'xpath',
+        'pattern': ".//*[@id='main']/div/div[1]/table/tr[position()>1]",
+        'position': {'ip': './td[1]', 'port': './td[2]', 'type': './td[4]', 'protocol': ''}
+    },
+    
+   ......
+ 
+   
+    {
+        'urls': ['http://www.cnproxy.com/proxy%s.html' % i for i in range(1, 11)],
+        'type': 'module',
+        'moduleName': 'CnproxyPraser',
+        'pattern': r'<tr><td>(\d+\.\d+\.\d+\.\d+)<SCRIPT type=text/javascript>document.write\(\"\:\"(.+)\)</SCRIPT></td><td>(HTTP|SOCKS4)\s*',
+        'position': {'ip': 0, 'port': 1, 'type': -1, 'protocol': 2}
+    }
+]
 
+#数据库的配置
+
+DB_CONFIG = {
+
+    'DB_CONNECT_TYPE': 'sqlalchemy',  # 'pymongo'sqlalchemy;redis
+    # 'DB_CONNECT_STRING':'mongodb://localhost:27017/'
+    'DB_CONNECT_STRING': 'sqlite:///' + os.path.dirname(__file__) + '/data/proxy.db'
+    # DB_CONNECT_STRING : 'mysql+mysqldb://root:root@localhost/proxy?charset=utf8'
+
+    # 'DB_CONNECT_TYPE': 'redis',  # 'pymongo'sqlalchemy;redis
+    # 'DB_CONNECT_STRING': 'redis://localhost:6379/8',
+
+}
+#THREADNUM为gevent pool的协程数目
+THREADNUM = 5
+
+#API_PORT为API web服务器的端口
+API_PORT = 8000
+
+#爬虫爬取和检测ip的设置条件
+#不需要检测ip是否已经存在，因为会定时清理
+# UPDATE_TIME:每半个小时检测一次是否有代理ip失效
+UPDATE_TIME = 30 * 60 
+
+# 当有效的ip值小于MINNUM时 需要启动爬虫进行爬取
+MINNUM = 50  
+
+# socket超时
+TIMEOUT = 5 
+
+
+
+
+#爬虫下载网页的重试次数
+RETRY_TIME = 3
+
+
+#USER_AGENTS 随机头信息,用来突破爬取网站的反爬虫
+
+USER_AGENTS = [
+    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+    "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
+    "Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+    "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
+    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
+    "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)",
+    "Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)",
+   ]
+#默认给抓取的ip分配20分,每次连接失败,减一分,直到分数全部扣完从数据库中删除
+DEFAULT_SCORE=10
+
+#CHECK_PROXY变量是为了用户自定义检测代理的函数,，默认是CHECK_PROXY={'function':'checkProxy'}。
+#现在使用检测的网址是httpbin.org,但是即使ip通过了验证和检测
+#也只能说明通过此代理ip可以到达httpbin.org,但是不一定能到达用户爬取的网址
+#因此在这个地方用户可以自己添加检测函数,我以百度为访问网址尝试一下
+#大家可以看一下Validator.py文件中的baidu_check函数和detect_proxy函数就会明白
+
+CHECK_PROXY={'function':'checkProxy'}#{'function':'baidu_check'}
+```
 ## TODO
-1.添加二级代理，简化爬虫配置
+1.添加squid代理，简化爬虫配置
 <br/>
 
 
 ## 更新进度
+-----------------------------2017-4-6----------------------------
+<br/>
+1.更新评分机制。
+<br/>
+* 之前的评分机制是刚添加进来每个代理ip为0分，每隔半个小时检测一次，检测之后依然有效则加分，无效则删除。
+* 现在的评分机制是每个新的代理ip分配10分,每隔半个小时检测一次，检测之后依然有效则分数不变，无效则分数减一,直至为0删除,可以避免由于检测网站不稳定导致的误删。
 
+2.用户可以自定义检测函数,在config.py的CHECK_PROXY变量中可以配置。
+```
+CHECK_PROXY变量是为了用户自定义检测代理的函数，默认是CHECK_PROXY={'function':'checkProxy'}
+现在使用检测的网址是httpbin.org,但是即使ip通过了验证和检测
+也只能说明通过此代理ip可以到达httpbin.org,但是不一定能到达用户爬取的网址
+因此在这个地方用户可以自己添加检测函数,我以百度为访问网址尝试一下
+大家可以看一下Validator.py文件中的baidu_check函数和detect_proxy函数就会明白。
+
+CHECK_PROXY={'function':'baidu_check'}
+```
+3.经过大家的共同努力,彻底解决了僵死进程的问题。
 
 -----------------------------2017-1-16----------------------------
 <br/>

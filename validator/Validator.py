@@ -60,15 +60,16 @@ def validator(queue1, queue2, myip):
 
         if not cntl_q.empty():
             # 处理已结束的进程
-            pid = cntl_q.get()
-            proc = proc_pool.pop(pid)
-            proc_ps = psutil.Process(pid)
-            proc_ps.kill()
             try:
+                pid = cntl_q.get()
+                proc = proc_pool.pop(pid)
+                proc_ps = psutil.Process(pid)
+                proc_ps.kill()
                 proc_ps.wait()
             except Exception as e:
-                print(e)
-                print(" we are unable to kill pid:%s" % (pid))
+                pass
+                # print(e)
+                # print(" we are unable to kill pid:%s" % (pid))
 
 
 def process_start(tasks, myip, queue2, cntl):

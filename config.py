@@ -13,13 +13,13 @@ ip，端口，类型(0高匿名，1透明)，protocol(0 http,1 https),country(�
 '''
 parserList = [
     {
-        'urls': ['http://m.66ip.cn/%s.html' % n for n in ['index'] + list(range(2, 12))],
+        'urls': ['http://www.66ip.cn/%s.html' % n for n in ['index'] + list(range(2, 12))],
         'type': 'xpath',
         'pattern': ".//*[@id='main']/div/div[1]/table/tr[position()>1]",
         'position': {'ip': './td[1]', 'port': './td[2]', 'type': './td[4]', 'protocol': ''}
     },
     {
-        'urls': ['http://m.66ip.cn/areaindex_%s/%s.html' % (m, n) for m in range(1, 35) for n in range(1, 10)],
+        'urls': ['http://www.66ip.cn/areaindex_%s/%s.html' % (m, n) for m in range(1, 35) for n in range(1, 10)],
         'type': 'xpath',
         'pattern': ".//*[@id='footer']/div/table/tr[position()>1]",
         'position': {'ip': './td[1]', 'port': './td[2]', 'type': './td[4]', 'protocol': ''}
@@ -122,11 +122,10 @@ API_PORT = 8000
 爬虫爬取和检测ip的设置条件
 不需要检测ip是否已经存在，因为会定时清理
 '''
-UPDATE_TIME = 30 * 60  # 每一个小时检测一次是否有代理ip失效
-MINNUM = 40  # 当有效的ip值小于一个时 需要启动爬虫进行爬取
+UPDATE_TIME = 30 * 60  # 每半个小时检测一次是否有代理ip失效
+MINNUM = 50  # 当有效的ip值小于一个时 需要启动爬虫进行爬取
 
 TIMEOUT = 5  # socket延时
-
 '''
 反爬虫的设置
 '''
@@ -195,8 +194,9 @@ TEST_HTTPS_HEADER = 'https://httpbin.org/get'
 #现在使用检测的网址是httpbin.org,但是即使ip通过了验证和检测
 #也只能说明通过此代理ip可以到达httpbin.org,但是不一定能到达用户爬取的网址
 #因此在这个地方用户可以自己添加检测函数,我以百度为访问网址尝试一下
-#大家可以看一下Validator.py文件中的baidu_check函数和detect_proxy就会明白
-CHECK_PROXY={'function':'baidu_check'}
+#大家可以看一下Validator.py文件中的baidu_check函数和detect_proxy函数就会明白
 
-#下面配置squid
-SQUID={'path':None,'confpath':'C:/squid/etc/squid.conf'}
+CHECK_PROXY={'function':'checkProxy'}#{'function':'baidu_check'}
+
+#下面配置squid,现在还没实现
+#SQUID={'path':None,'confpath':'C:/squid/etc/squid.conf'}
