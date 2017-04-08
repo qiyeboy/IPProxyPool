@@ -13,7 +13,7 @@ if __name__ == "__main__":
     q1 = Queue()
     q2 = Queue()
     p0 = Process(target=start_api_server)
-    p1 = Process(target=startProxyCrawl, args=(q1, DB_PROXY_NUM))
+    p1 = Process(target=startProxyCrawl, args=(q1, DB_PROXY_NUM,myip))
     p2 = Process(target=validator, args=(q1, q2, myip))
     p3 = Process(target=store_data, args=(q2, DB_PROXY_NUM))
     p0.start()

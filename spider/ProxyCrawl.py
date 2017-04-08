@@ -21,18 +21,20 @@ from validator.Validator import validator, getMyIP, detect_from_db
 '''
 
 
-def startProxyCrawl(queue, db_proxy_num):
-    crawl = ProxyCrawl(queue, db_proxy_num)
+def startProxyCrawl(queue, db_proxy_num,myip):
+    crawl = ProxyCrawl(queue, db_proxy_num,myip)
     crawl.run()
 
 
 class ProxyCrawl(object):
     proxies = set()
 
-    def __init__(self, queue, db_proxy_num):
+    def __init__(self, queue, db_proxy_num,myip):
         self.crawl_pool = Pool(THREADNUM)
         self.queue = queue
         self.db_proxy_num = db_proxy_num
+        self.myip = myip
+
 
     def run(self):
         while True:
@@ -41,10 +43,10 @@ class ProxyCrawl(object):
             sys.stdout.write(str + "\r\n")
             sys.stdout.flush()
             proxylist = sqlhelper.select()
-            myip = getMyIP()
+
             spawns = []
             for proxy in proxylist:
-                spawns.append(gevent.spawn(detect_from_db, myip, proxy, self.proxies))
+                spawns.append(gevent.spawn(detect_from_db, self.myip, proxy, self.proxies))
             gevent.joinall(spawns)
             self.db_proxy_num.value = len(self.proxies)
             str = 'IPProxyPool----->>>>>>>>db exists ip:%d' % len(self.proxies)
