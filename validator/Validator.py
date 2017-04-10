@@ -152,7 +152,7 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
             elif proxy_connection:
                 types = 1
             else:
-                types = 2
+                types = 0
 
             return True, types, speed
         else:
