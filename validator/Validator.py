@@ -145,16 +145,15 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
             content = json.loads(r.text)
             headers = content['headers']
             ip = content['origin']
-            x_forwarded_for = headers.get('X-Forwarded-For', None)
-            x_real_ip = headers.get('X-Real-Ip', None)
-            if selfip in ip or ',' in ip:
-                return False, types, speed
-            elif x_forwarded_for is None and x_real_ip is None:
-                types = 0
-            elif selfip not in x_forwarded_for and selfip not in x_real_ip:
+            proxy_connection = headers.get('Proxy-Connection', None)
+
+            if ',' in ip:
+                types = 2
+            elif proxy_connection:
                 types = 1
             else:
-                types = 2
+                types = 0
+
             return True, types, speed
         else:
             return False, types, speed
