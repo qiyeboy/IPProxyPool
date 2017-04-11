@@ -91,7 +91,7 @@ def detect_proxy(selfip, proxy, queue2=None):
     protocol, types, speed = getattr(sys.modules[__name__],config.CHECK_PROXY['function'])(selfip, proxies)#checkProxy(selfip, proxies)
     if protocol >= 0:
         proxy['protocol'] = protocol
-        proxy['type'] = types
+        proxy['types'] = types
         proxy['speed'] = speed
     else:
         proxy = None
@@ -146,7 +146,6 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
             headers = content['headers']
             ip = content['origin']
             proxy_connection = headers.get('Proxy-Connection', None)
-
             if ',' in ip:
                 types = 2
             elif proxy_connection:
@@ -213,7 +212,11 @@ def getMyIP():
 
 
 if __name__ == '__main__':
-    getMyIP()
+    ip = '222.186.161.132'
+    port = 3128
+    proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
+    _checkHttpProxy(None,proxies)
+    # getMyIP()
     # str="{ip:'61.150.43.121',address:'陕西省西安市 西安电子科技大学'}"
     # j = json.dumps(str)
     # str = j['ip']
