@@ -27,7 +27,8 @@ def store_data(queue2, db_proxy_num):
     failNum = 0
     while True:
         try:
-            proxy = queue2.get(timeout=300)
+            # proxy = queue2.get(timeout=300)
+            proxy = queue2.get()
             if proxy:
 
                 sqlhelper.insert(proxy)
