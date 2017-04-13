@@ -10,7 +10,7 @@ from gevent.pool import Pool
 from multiprocessing import Queue, Process, Value
 
 from api.apiServer import start_api_server
-from config import THREADNUM, parserList, UPDATE_TIME, MINNUM, MAX_CHECK_CONCURRENT_PER_PROCESS, MAX_DOWNLOAD_CURRENT
+from config import THREADNUM, parserList, UPDATE_TIME, MINNUM, MAX_CHECK_CONCURRENT_PER_PROCESS, MAX_DOWNLOAD_CONCURRENT
 from db.DataStore import store_data, sqlhelper
 from spider.HtmlDownloader import Html_Downloader
 from spider.HtmlPraser import Html_Parser
@@ -61,7 +61,7 @@ class ProxyCrawl(object):
                 spawns = []
                 for p in parserList:
                     spawns.append(gevent.spawn(self.crawl, p))
-                    if len(spawns) >= MAX_DOWNLOAD_CURRENT:
+                    if len(spawns) >= MAX_DOWNLOAD_CONCURRENT:
                         gevent.joinall(spawns)
                         spawns= []
                 gevent.joinall(spawns)
