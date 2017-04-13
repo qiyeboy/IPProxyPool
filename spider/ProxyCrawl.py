@@ -47,6 +47,9 @@ class ProxyCrawl(object):
             spawns = []
             for proxy in proxylist:
                 spawns.append(gevent.spawn(detect_from_db, self.myip, proxy, self.proxies))
+                if len(spawns) >= 30:
+                    gevent.joinall(spawns)
+                    spawns= []
             gevent.joinall(spawns)
             self.db_proxy_num.value = len(self.proxies)
             str = 'IPProxyPool----->>>>>>>>db exists ip:%d' % len(self.proxies)
@@ -55,7 +58,9 @@ class ProxyCrawl(object):
                 str += '\r\nIPProxyPool----->>>>>>>>now ip num < MINNUM,start crawling...'
                 sys.stdout.write(str + "\r\n")
                 sys.stdout.flush()
-                self.crawl_pool.map(self.crawl, parserList)
+                # self.crawl_pool.map(self.crawl, parserList)
+                for p in parserList:
+                    self.crawl(p)
             else:
                 str += '\r\nIPProxyPool----->>>>>>>>now ip num meet the requirement,wait UPDATE_TIME...'
                 sys.stdout.write(str + "\r\n")
