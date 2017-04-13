@@ -41,6 +41,18 @@ def validator(queue1, queue2, myip):
     proc_pool = {}     # 所有进程列表
     cntl_q = Queue()   # 控制信息队列
     while True:
+        if not cntl_q.empty():
+            # 处理已结束的进程
+            try:
+                pid = cntl_q.get()
+                proc = proc_pool.pop(pid)
+                proc_ps = psutil.Process(pid)
+                proc_ps.kill()
+                proc_ps.wait()
+            except Exception as e:
+                pass
+                # print(e)
+                # print(" we are unable to kill pid:%s" % (pid))
         try:
             # proxy_dict = {'source':'crawl','data':proxy}
             if len(proc_pool) >= config.MAX_CHECK_PROCESS:
@@ -60,20 +72,6 @@ def validator(queue1, queue2, myip):
                 p.start()
                 proc_pool[p.pid] = p
                 tasklist = []
-
-        if not cntl_q.empty():
-            # 处理已结束的进程
-            try:
-                pid = cntl_q.get()
-                proc = proc_pool.pop(pid)
-                proc_ps = psutil.Process(pid)
-                proc_ps.kill()
-                proc_ps.wait()
-            except Exception as e:
-                pass
-                # print(e)
-                # print(" we are unable to kill pid:%s" % (pid))
-
 
 def process_start(tasks, myip, queue2, cntl):
     spawns = []
