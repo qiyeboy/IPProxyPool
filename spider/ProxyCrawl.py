@@ -10,7 +10,7 @@ from gevent.pool import Pool
 from multiprocessing import Queue, Process, Value
 
 from api.apiServer import start_api_server
-from config import THREADNUM, parserList, UPDATE_TIME, MINNUM
+from config import THREADNUM, parserList, UPDATE_TIME, MINNUM, MAX_CHECK_CURRENT
 from db.DataStore import store_data, sqlhelper
 from spider.HtmlDownloader import Html_Downloader
 from spider.HtmlPraser import Html_Parser
@@ -47,7 +47,7 @@ class ProxyCrawl(object):
             spawns = []
             for proxy in proxylist:
                 spawns.append(gevent.spawn(detect_from_db, self.myip, proxy, self.proxies))
-                if len(spawns) >= 30:
+                if len(spawns) >= MAX_CHECK_CURRENT:
                     gevent.joinall(spawns)
                     spawns= []
             gevent.joinall(spawns)
@@ -58,9 +58,9 @@ class ProxyCrawl(object):
                 str += '\r\nIPProxyPool----->>>>>>>>now ip num < MINNUM,start crawling...'
                 sys.stdout.write(str + "\r\n")
                 sys.stdout.flush()
-                # self.crawl_pool.map(self.crawl, parserList)
-                for p in parserList:
-                    self.crawl(p)
+                self.crawl_pool.map(self.crawl, parserList)
+                # for p in parserList:
+                #     self.crawl(p)
             else:
                 str += '\r\nIPProxyPool----->>>>>>>>now ip num meet the requirement,wait UPDATE_TIME...'
                 sys.stdout.write(str + "\r\n")

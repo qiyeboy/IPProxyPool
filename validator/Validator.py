@@ -43,10 +43,9 @@ def validator(queue1, queue2, myip):
     while True:
         try:
             # proxy_dict = {'source':'crawl','data':proxy}
-            # proxy = queue1.get(timeout=10)
             proxy = queue1.get()
             tasklist.append(proxy)
-            if len(tasklist) >= 30:
+            if len(tasklist) >= config.MAX_CHECK_CURRENT:
                 normal_start(tasklist, myip, queue2)
                 # p = Process(target=process_start, args=(tasklist, myip, queue2, cntl_q))
                 # p.start()
