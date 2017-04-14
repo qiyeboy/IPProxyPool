@@ -83,7 +83,12 @@ class ProxyCrawl(object):
                         proxy_str = '%s:%s' % (proxy['ip'], proxy['port'])
                         if proxy_str not in self.proxies:
                             self.proxies.add(proxy_str)
-                            self.queue.put(proxy)
+                            while True:
+                                if self.queue.full():
+                                    time.sleep(0.1)
+                                else:
+                                    self.queue.put(proxy)
+                                    break
 
 
 if __name__ == "__main__":
