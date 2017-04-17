@@ -92,7 +92,7 @@ def detect_proxy(selfip, proxy, queue2=None):
     protocol, types, speed = getattr(sys.modules[__name__],config.CHECK_PROXY['function'])(selfip, proxies)#checkProxy(selfip, proxies)
     if protocol >= 0:
         proxy['protocol'] = protocol
-        proxy['type'] = types
+        proxy['types'] = types
         proxy['speed'] = speed
     else:
         proxy = None
