@@ -41,23 +41,6 @@ def validator(queue1, queue2, myip):
     proc_pool = {}     # 所有进程列表
     cntl_q = Queue()   # 控制信息队列
     while True:
-        try:
-            # proxy_dict = {'source':'crawl','data':proxy}
-            proxy = queue1.get(timeout=10)
-            tasklist.append(proxy)
-            if len(tasklist) > 500:
-                p = Process(target=process_start, args=(tasklist, myip, queue2, cntl_q))
-                p.start()
-                proc_pool[p.pid] = p
-                tasklist = []
-
-        except Exception as e:
-            if len(tasklist) > 0:
-                p = Process(target=process_start, args=(tasklist, myip, queue2, cntl_q))
-                p.start()
-                proc_pool[p.pid] = p
-                tasklist = []
-
         if not cntl_q.empty():
             # 处理已结束的进程
             try:
@@ -70,7 +53,25 @@ def validator(queue1, queue2, myip):
                 pass
                 # print(e)
                 # print(" we are unable to kill pid:%s" % (pid))
+        try:
+            # proxy_dict = {'source':'crawl','data':proxy}
+            if len(proc_pool) >= config.MAX_CHECK_PROCESS:
+                time.sleep(config.CHECK_WATI_TIME)
+                continue
+            proxy = queue1.get()
+            tasklist.append(proxy)
+            if len(tasklist) >= config.MAX_CHECK_CONCURRENT_PER_PROCESS:
+                p = Process(target=process_start, args=(tasklist, myip, queue2, cntl_q))
+                p.start()
+                proc_pool[p.pid] = p
+                tasklist = []
 
+        except Exception as e:
+            if len(tasklist) > 0:
+                p = Process(target=process_start, args=(tasklist, myip, queue2, cntl_q))
+                p.start()
+                proc_pool[p.pid] = p
+                tasklist = []
 
 def process_start(tasks, myip, queue2, cntl):
     spawns = []
