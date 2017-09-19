@@ -44,6 +44,8 @@ class MongoHelper(ISqlHelper):
             count = 0
         if conditions:
             conditions = dict(conditions)
+            if 'count' in conditions:
+                del conditions['count']
             conditions_name = ['types', 'protocol']
             for condition_name in conditions_name:
                 value = conditions.get(condition_name, None)
